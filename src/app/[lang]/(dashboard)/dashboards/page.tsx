@@ -12,7 +12,7 @@ const Dashboard = async () => {
             <Grid item xs={12} md={4}>
                 <CongratulationsJohn />
             </Grid>
-
+            <h1>Achraf lafkiri</h1>
         </Grid>
     )
 }

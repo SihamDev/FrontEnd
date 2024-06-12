@@ -91,6 +91,10 @@ const VerticalMenu = ({ dictionary, scrollMenu }: Props) => {
           {dictionary['navigation'].dashboards}
         </MenuItem>
 
+        <MenuItem href={`/${locale}/apps/assistants`} icon={<i className='tabler-calendar' />}>
+          {dictionary['navigation'].assistants}
+        </MenuItem>
+
       </Menu>
 
     </ScrollWrapper >
