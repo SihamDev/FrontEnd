@@ -11,9 +11,15 @@ const data: SearchData[] = [
     name: 'Dashboards',
     url: '/dashboards/',
     icon: 'tabler-chart-pie-2',
-    section: 'Dashbowwwards'
+    section: 'Dashboards'
   },
- 
+  {
+    id: '2',
+    name: 'Assistants',
+    url: '/assistants/',
+    icon: 'tabler-chart-pie-2',
+    section: 'Assistants'
+  },
 ]
 
 export default data
