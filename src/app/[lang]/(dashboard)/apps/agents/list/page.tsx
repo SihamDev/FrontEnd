@@ -1,4 +1,4 @@
-"use client"; // Add this line at the top
+"use client";
 
 import React, { useState } from 'react';
 import {
@@ -22,7 +22,6 @@ import {
 } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
 
-// Define the Agent type
 interface Agent {
   id: number;
   name: string;
@@ -31,7 +30,6 @@ interface Agent {
 }
 
 const AgentsList: React.FC = () => {
-  // State to manage the list of agents
   const [agents, setAgents] = useState<Agent[]>([]);
   const [open, setOpen] = useState(false);
   const [editingAgent, setEditingAgent] = useState<Agent | null>(null);
@@ -39,7 +37,6 @@ const AgentsList: React.FC = () => {
   const [greeting, setGreeting] = useState('');
   const [language, setLanguage] = useState('');
 
-  // Handle opening the dialog
   const handleClickOpen = (agent: Agent | null = null) => {
     if (agent) {
       setEditingAgent(agent);
@@ -55,24 +52,21 @@ const AgentsList: React.FC = () => {
     setOpen(true);
   };
 
-  // Handle closing the dialog
   const handleClose = () => {
     setOpen(false);
   };
 
-  // Handle form submission for adding/updating an agent
   const handleSubmit = () => {
     if (editingAgent) {
-      // Update existing agent
+
       setAgents(agents.map(agent => (agent.id === editingAgent.id ? { ...agent, name, greeting, language } : agent)));
     } else {
-      // Add new agent
+
       setAgents([...agents, { id: Date.now(), name, greeting, language }]);
     }
     handleClose();
   };
 
-  // Handle deleting an agent
   const handleDelete = (id: number) => {
     setAgents(agents.filter(agent => agent.id !== id));
   };
