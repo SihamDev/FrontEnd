@@ -16,7 +16,7 @@ const horizontalMenuData = (
       icon: 'tabler-smart-home',
     },
     {
-      label: dictionary['navigation'].assistants,
+      label: dictionary['navigation'].agents,
       icon: 'tabler-smart-home',
     },
   ]

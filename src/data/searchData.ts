@@ -6,20 +6,20 @@ export type SearchData = Action & {
 }
 
 const data: SearchData[] = [
-  {
-    id: '1',
-    name: 'Dashboards',
-    url: '/dashboards/',
-    icon: 'tabler-chart-pie-2',
-    section: 'Dashboards'
-  },
-  {
-    id: '2',
-    name: 'Assistants',
-    url: '/assistants/',
-    icon: 'tabler-chart-pie-2',
-    section: 'Assistants'
-  },
+  // {
+  //   id: '1',
+  //   name: 'Dashboards',
+  //   url: '/dashboards/',
+  //   icon: 'tabler-chart-pie-2',
+  //   section: 'Dashboards'
+  // },
+  // {
+  //   id: '2',
+  //   name: 'Agents',
+  //   url: '/agents/',
+  //   icon: 'tabler-chart-pie-2',
+  //   section: 'Agents'
+  // },
 ]
 
 export default data
