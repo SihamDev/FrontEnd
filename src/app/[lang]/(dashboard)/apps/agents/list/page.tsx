@@ -12,25 +12,13 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  TextField,
   IconButton,
   Card,
   CardContent,
-  CardActions,
-  Tabs,
-  Tab,
-  Box,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
+  CardActions
 } from '@mui/material';
 import { Delete, Edit, TableRows, ViewModule } from '@mui/icons-material';
+import AgentDialog from '@/components/Agent/AgentDialog';
 
 interface Agent {
   id: number;
@@ -41,6 +29,7 @@ interface Agent {
   ambientSound: string;
   companyInfo: string;
   objectives: string;
+  tags: string[];
 }
 
 const AgentsList: React.FC = () => {
@@ -51,11 +40,15 @@ const AgentsList: React.FC = () => {
   const [greeting, setGreeting] = useState('');
   const [language, setLanguage] = useState('');
   const [prompt, setPrompt] = useState('');
+  const [whoSpeaksFirst, setWhoSpeaksFirst] = useState('');
+  const [customGreeting, setCustomGreeting] = useState('');
   const [ambientSound, setAmbientSound] = useState('');
   const [companyInfo, setCompanyInfo] = useState('');
   const [objectives, setObjectives] = useState('');
   const [view, setView] = useState<'table' | 'card'>('table');
   const [activeTab, setActiveTab] = useState(0);
+  const [variablesOpen, setVariablesOpen] = useState(false);
+  const [tags, setTags] = useState<string[]>([]);
 
   const languageOptions = [
     { value: 'en-US', label: 'English (US)' },
@@ -80,6 +73,8 @@ const AgentsList: React.FC = () => {
       setGreeting(agent.greeting);
       setLanguage(agent.language);
       setPrompt(agent.prompt);
+      setWhoSpeaksFirst(agent.prompt);
+      setCustomGreeting(agent.prompt);
       setAmbientSound(agent.ambientSound);
       setCompanyInfo(agent.companyInfo);
       setObjectives(agent.objectives);
@@ -89,6 +84,8 @@ const AgentsList: React.FC = () => {
       setGreeting('');
       setLanguage('');
       setPrompt('');
+      setWhoSpeaksFirst('');
+      setCustomGreeting('');
       setAmbientSound('');
       setCompanyInfo('');
       setObjectives('');
@@ -121,6 +118,14 @@ const AgentsList: React.FC = () => {
     setActiveTab(newValue);
   };
 
+  const handleVariablesToggle = () => {
+    setVariablesOpen(!variablesOpen);
+  };
+
+  const insertVariable = (variable: string) => {
+    setCustomGreeting(customGreeting + ' ' + variable);
+  };
+
   return (
     <Container>
       <Typography variant="h4" component="h1" gutterBottom>
@@ -132,6 +137,7 @@ const AgentsList: React.FC = () => {
       <Button variant="contained" color="secondary" onClick={handleViewToggle} style={{ marginLeft: '10px' }}>
         {view === 'table' ? <ViewModule /> : <TableRows />}
       </Button>
+
       {view === 'table' ? (
         <TableContainer component={Paper} style={{ marginTop: '20px' }}>
           <Table>
@@ -183,114 +189,40 @@ const AgentsList: React.FC = () => {
           ))}
         </div>
       )}
-      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
-        <DialogTitle>{editingAgent ? 'Update Agent' : 'Add Agent'}</DialogTitle>
-        <DialogContent>
-          <Tabs value={activeTab} onChange={handleTabChange}>
-            <Tab label="Settings" />
-            <Tab label="Prompt" />
-            <Tab label="Actions" />
-            <Tab label="Variables" />
-          </Tabs>
-          {activeTab === 0 && (
-            <Box mt={2}>
-              <TextField
-                autoFocus
-                margin="dense"
-                label="Name"
-                type="text"
-                fullWidth
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-              <TextField
-                margin="dense"
-                label="Greeting"
-                type="text"
-                fullWidth
-                value={greeting}
-                onChange={(e) => setGreeting(e.target.value)}
-              />
-              <FormControl fullWidth margin="dense">
-                <InputLabel>Language</InputLabel>
-                <Select
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value)}
-                >
-                  {languageOptions.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <TextField
-                margin="dense"
-                label="Ambient Sound"
-                type="text"
-                fullWidth
-                value={ambientSound}
-                onChange={(e) => setAmbientSound(e.target.value)}
-              />
-              <TextField
-                margin="dense"
-                label="Company Info"
-                type="text"
-                fullWidth
-                multiline
-                rows={4}
-                value={companyInfo}
-                onChange={(e) => setCompanyInfo(e.target.value)}
-              />
-              <TextField
-                margin="dense"
-                label="Objectives"
-                type="text"
-                fullWidth
-                multiline
-                rows={4}
-                value={objectives}
-                onChange={(e) => setObjectives(e.target.value)}
-              />
-            </Box>
-          )}
-          {activeTab === 1 && (
-            <Box mt={2}>
-              <TextField
-                margin="dense"
-                label="Prompt"
-                type="text"
-                fullWidth
-                multiline
-                rows={4}
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-              />
-            </Box>
-          )}
-          {activeTab === 2 && (
-            <Box mt={2}>
 
-              <Typography variant="h6">Actions Section</Typography>
-            </Box>
-          )}
-          {activeTab === 3 && (
-            <Box mt={2}>
+      <AgentDialog
+        open={open}
+        handleClose={handleClose}
+        handleSubmit={handleSubmit}
+        editingAgent={editingAgent}
+        activeTab={activeTab}
+        handleTabChange={handleTabChange}
+        name={name}
+        setName={setName}
+        greeting={greeting}
+        setGreeting={setGreeting}
+        language={language}
+        setLanguage={setLanguage}
+        prompt={prompt}
+        setPrompt={setPrompt}
+        whoSpeaksFirst={whoSpeaksFirst}
+        setWhoSpeaksFirst={setWhoSpeaksFirst}
+        customGreeting={customGreeting}
+        setCustomGreeting={setCustomGreeting}
+        ambientSound={ambientSound}
+        setAmbientSound={setAmbientSound}
+        companyInfo={companyInfo}
+        setCompanyInfo={setCompanyInfo}
+        objectives={objectives}
+        setObjectives={setObjectives}
+        variablesOpen={variablesOpen}
+        handleVariablesToggle={handleVariablesToggle}
+        insertVariable={insertVariable}
+        tags={tags}
+        setTags={setTags}
+      />
 
-              <Typography variant="h6">Variables Section</Typography>
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} color="primary">
-            {editingAgent ? 'Update' : 'Add'}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+    </Container >
   );
 };
 
