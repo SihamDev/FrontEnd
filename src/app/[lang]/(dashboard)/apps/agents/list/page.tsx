@@ -25,6 +25,10 @@ import {
   Tabs,
   Tab,
   Box,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from '@mui/material';
 import { Delete, Edit, TableRows, ViewModule } from '@mui/icons-material';
 
@@ -52,6 +56,22 @@ const AgentsList: React.FC = () => {
   const [objectives, setObjectives] = useState('');
   const [view, setView] = useState<'table' | 'card'>('table');
   const [activeTab, setActiveTab] = useState(0);
+
+  const languageOptions = [
+    { value: 'en-US', label: 'English (US)' },
+    { value: 'es-ES', label: 'Spanish (Spain)' },
+    { value: 'fr-FR', label: 'French (France)' },
+    { value: 'de-DE', label: 'German (Germany)' },
+    { value: 'it-IT', label: 'Italian (Italy)' },
+    { value: 'ja-JP', label: 'Japanese (Japan)' },
+    { value: 'zh-CN', label: 'Chinese (Simplified, China)' },
+    { value: 'pt-BR', label: 'Portuguese (Brazil)' },
+    { value: 'ru-RU', label: 'Russian (Russia)' },
+    { value: 'ko-KR', label: 'Korean (South Korea)' },
+    { value: 'ar-SA', label: 'Arabic (Saudi Arabia)' },
+    { value: 'hi-IN', label: 'Hindi (India)' },
+    { value: 'nl-NL', label: 'Dutch (Netherlands)' },
+  ];
 
   const handleClickOpen = (agent: Agent | null = null) => {
     if (agent) {
@@ -191,14 +211,19 @@ const AgentsList: React.FC = () => {
                 value={greeting}
                 onChange={(e) => setGreeting(e.target.value)}
               />
-              <TextField
-                margin="dense"
-                label="Language"
-                type="text"
-                fullWidth
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-              />
+              <FormControl fullWidth margin="dense">
+                <InputLabel>Language</InputLabel>
+                <Select
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value)}
+                >
+                  {languageOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
               <TextField
                 margin="dense"
                 label="Ambient Sound"
@@ -245,13 +270,13 @@ const AgentsList: React.FC = () => {
           )}
           {activeTab === 2 && (
             <Box mt={2}>
-              {/* Add the Actions content here */}
+
               <Typography variant="h6">Actions Section</Typography>
             </Box>
           )}
           {activeTab === 3 && (
             <Box mt={2}>
-              {/* Add the Variables content here */}
+
               <Typography variant="h6">Variables Section</Typography>
             </Box>
           )}
