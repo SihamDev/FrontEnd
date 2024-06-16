@@ -1,6 +1,10 @@
 {
   "navigation": {
-    "dashboards": "Tableaux de bord",
-    "agents": "agents"
+    "dashboards": "Dashboards",
+    "agents": "Agents",
+    "myagent": "My Agent",
+    "log": "Call Log",
+    "settings": "Settings",
+    "billings": "Billings"
   }
 }

@@ -1,6 +1,10 @@
 {
   "navigation": {
     "dashboards": "Dashboards",
-    "agents": "Agents"
+    "agents": "Agents",
+    "myagent": "My Agent",
+    "log": "Call Log",
+    "settings": "Settings",
+    "billings": "Billings"
   }
 }

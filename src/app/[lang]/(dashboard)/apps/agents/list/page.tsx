@@ -19,14 +19,24 @@ import {
   DialogTitle,
   TextField,
   IconButton,
+  Card,
+  CardContent,
+  CardActions,
+  Tabs,
+  Tab,
+  Box,
 } from '@mui/material';
-import { Delete, Edit } from '@mui/icons-material';
+import { Delete, Edit, TableRows, ViewModule } from '@mui/icons-material';
 
 interface Agent {
   id: number;
   name: string;
   greeting: string;
   language: string;
+  prompt: string;
+  ambientSound: string;
+  companyInfo: string;
+  objectives: string;
 }
 
 const AgentsList: React.FC = () => {
@@ -36,6 +46,12 @@ const AgentsList: React.FC = () => {
   const [name, setName] = useState('');
   const [greeting, setGreeting] = useState('');
   const [language, setLanguage] = useState('');
+  const [prompt, setPrompt] = useState('');
+  const [ambientSound, setAmbientSound] = useState('');
+  const [companyInfo, setCompanyInfo] = useState('');
+  const [objectives, setObjectives] = useState('');
+  const [view, setView] = useState<'table' | 'card'>('table');
+  const [activeTab, setActiveTab] = useState(0);
 
   const handleClickOpen = (agent: Agent | null = null) => {
     if (agent) {
@@ -43,11 +59,19 @@ const AgentsList: React.FC = () => {
       setName(agent.name);
       setGreeting(agent.greeting);
       setLanguage(agent.language);
+      setPrompt(agent.prompt);
+      setAmbientSound(agent.ambientSound);
+      setCompanyInfo(agent.companyInfo);
+      setObjectives(agent.objectives);
     } else {
       setEditingAgent(null);
       setName('');
       setGreeting('');
       setLanguage('');
+      setPrompt('');
+      setAmbientSound('');
+      setCompanyInfo('');
+      setObjectives('');
     }
     setOpen(true);
   };
@@ -58,17 +82,23 @@ const AgentsList: React.FC = () => {
 
   const handleSubmit = () => {
     if (editingAgent) {
-
-      setAgents(agents.map(agent => (agent.id === editingAgent.id ? { ...agent, name, greeting, language } : agent)));
+      setAgents(agents.map(agent => (agent.id === editingAgent.id ? { ...agent, name, greeting, language, prompt, ambientSound, companyInfo, objectives } : agent)));
     } else {
-
-      setAgents([...agents, { id: Date.now(), name, greeting, language }]);
+      setAgents([...agents, { id: Date.now(), name, greeting, language, prompt, ambientSound, companyInfo, objectives }]);
     }
     handleClose();
   };
 
   const handleDelete = (id: number) => {
     setAgents(agents.filter(agent => agent.id !== id));
+  };
+
+  const handleViewToggle = () => {
+    setView(view === 'table' ? 'card' : 'table');
+  };
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setActiveTab(newValue);
   };
 
   return (
@@ -79,66 +109,152 @@ const AgentsList: React.FC = () => {
       <Button variant="contained" color="primary" onClick={() => handleClickOpen()}>
         Add Agent
       </Button>
-      <TableContainer component={Paper} style={{ marginTop: '20px' }}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Greeting</TableCell>
-              <TableCell>Language</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {agents.map((agent) => (
-              <TableRow key={agent.id}>
-                <TableCell>{agent.name}</TableCell>
-                <TableCell>{agent.greeting}</TableCell>
-                <TableCell>{agent.language}</TableCell>
-                <TableCell>
-                  <IconButton onClick={() => handleClickOpen(agent)}>
-                    <Edit />
-                  </IconButton>
-                  <IconButton onClick={() => handleDelete(agent.id)}>
-                    <Delete />
-                  </IconButton>
-                </TableCell>
+      <Button variant="contained" color="secondary" onClick={handleViewToggle} style={{ marginLeft: '10px' }}>
+        {view === 'table' ? <ViewModule /> : <TableRows />}
+      </Button>
+      {view === 'table' ? (
+        <TableContainer component={Paper} style={{ marginTop: '20px' }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Name</TableCell>
+                <TableCell>Greeting</TableCell>
+                <TableCell>Language</TableCell>
+                <TableCell>Actions</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <Dialog open={open} onClose={handleClose}>
+            </TableHead>
+            <TableBody>
+              {agents.map((agent) => (
+                <TableRow key={agent.id}>
+                  <TableCell>{agent.name}</TableCell>
+                  <TableCell>{agent.greeting}</TableCell>
+                  <TableCell>{agent.language}</TableCell>
+                  <TableCell>
+                    <IconButton onClick={() => handleClickOpen(agent)}>
+                      <Edit />
+                    </IconButton>
+                    <IconButton onClick={() => handleDelete(agent.id)}>
+                      <Delete />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      ) : (
+        <div style={{ display: 'flex', flexWrap: 'wrap', marginTop: '20px' }}>
+          {agents.map((agent) => (
+            <Card key={agent.id} style={{ margin: '10px', width: '300px' }}>
+              <CardContent>
+                <Typography variant="h6">{agent.name}</Typography>
+                <Typography color="textSecondary">{agent.greeting}</Typography>
+                <Typography color="textSecondary">{agent.language}</Typography>
+              </CardContent>
+              <CardActions>
+                <IconButton onClick={() => handleClickOpen(agent)}>
+                  <Edit />
+                </IconButton>
+                <IconButton onClick={() => handleDelete(agent.id)}>
+                  <Delete />
+                </IconButton>
+              </CardActions>
+            </Card>
+          ))}
+        </div>
+      )}
+      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
         <DialogTitle>{editingAgent ? 'Update Agent' : 'Add Agent'}</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            {editingAgent ? 'Update the details of the agent.' : 'Enter the details of the new agent.'}
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Name"
-            type="text"
-            fullWidth
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <TextField
-            margin="dense"
-            label="Greeting"
-            type="text"
-            fullWidth
-            value={greeting}
-            onChange={(e) => setGreeting(e.target.value)}
-          />
-          <TextField
-            margin="dense"
-            label="Language"
-            type="text"
-            fullWidth
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-          />
+          <Tabs value={activeTab} onChange={handleTabChange}>
+            <Tab label="Settings" />
+            <Tab label="Prompt" />
+            <Tab label="Actions" />
+            <Tab label="Variables" />
+          </Tabs>
+          {activeTab === 0 && (
+            <Box mt={2}>
+              <TextField
+                autoFocus
+                margin="dense"
+                label="Name"
+                type="text"
+                fullWidth
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <TextField
+                margin="dense"
+                label="Greeting"
+                type="text"
+                fullWidth
+                value={greeting}
+                onChange={(e) => setGreeting(e.target.value)}
+              />
+              <TextField
+                margin="dense"
+                label="Language"
+                type="text"
+                fullWidth
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+              />
+              <TextField
+                margin="dense"
+                label="Ambient Sound"
+                type="text"
+                fullWidth
+                value={ambientSound}
+                onChange={(e) => setAmbientSound(e.target.value)}
+              />
+              <TextField
+                margin="dense"
+                label="Company Info"
+                type="text"
+                fullWidth
+                multiline
+                rows={4}
+                value={companyInfo}
+                onChange={(e) => setCompanyInfo(e.target.value)}
+              />
+              <TextField
+                margin="dense"
+                label="Objectives"
+                type="text"
+                fullWidth
+                multiline
+                rows={4}
+                value={objectives}
+                onChange={(e) => setObjectives(e.target.value)}
+              />
+            </Box>
+          )}
+          {activeTab === 1 && (
+            <Box mt={2}>
+              <TextField
+                margin="dense"
+                label="Prompt"
+                type="text"
+                fullWidth
+                multiline
+                rows={4}
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+              />
+            </Box>
+          )}
+          {activeTab === 2 && (
+            <Box mt={2}>
+              {/* Add the Actions content here */}
+              <Typography variant="h6">Actions Section</Typography>
+            </Box>
+          )}
+          {activeTab === 3 && (
+            <Box mt={2}>
+              {/* Add the Variables content here */}
+              <Typography variant="h6">Variables Section</Typography>
+            </Box>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
