@@ -1,35 +1,313 @@
-// MUI Imports
-import Grid from '@mui/material/Grid'
+import React, { useState } from 'react';
+import {
+  Typography,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  Tabs,
+  Tab,
+  Box,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  List,
+  ListItem,
+  ListItemText,
+  Grid,
+} from '@mui/material';
+import FunctionCard from '@/components/agent/functionCard';
+import AddAction from '@/components/agent/addAction';
 
-// Component Imports
-import AddCard from '@views/apps/invoice/add/AddCard'
-import AddActions from '@views/apps/invoice/add/AddActions'
+type Agent = {
+  id: number;
+  name: string;
+  greeting: string;
+  language: string;
+  prompt: string;
+  whoSpeaksFirst: string;
+  customGreeting: string;
+  ambientSound: string;
+  companyInfo: string;
+  objectives: string;
+  tags: string[];
+};
 
-const getData = async () => {
-  // Vars
-  const res = await fetch(`${process.env.API_URL}/apps/invoice`)
+const languageOptions = [
+  { value: 'en-US', label: 'English (US)' },
+  { value: 'es-ES', label: 'Spanish (Spain)' },
+  { value: 'fr-FR', label: 'French (France)' },
+  { value: 'de-DE', label: 'German (Germany)' },
+  { value: 'it-IT', label: 'Italian (Italy)' },
+  { value: 'ja-JP', label: 'Japanese (Japan)' },
+  { value: 'zh-CN', label: 'Chinese (Simplified, China)' },
+  { value: 'pt-BR', label: 'Portuguese (Brazil)' },
+  { value: 'ru-RU', label: 'Russian (Russia)' },
+  { value: 'ko-KR', label: 'Korean (South Korea)' },
+  { value: 'ar-SA', label: 'Arabic (Saudi Arabia)' },
+  { value: 'hi-IN', label: 'Hindi (India)' },
+  { value: 'nl-NL', label: 'Dutch (Netherlands)' },
+];
 
-  if (!res.ok) {
-    throw new Error('Failed to fetch invoice data')
-  }
+const AgentDialog: React.FC<{
+  open: boolean;
+  handleClose: () => void;
+  handleSubmit: () => void;
+  editingAgent: Agent | null;
+  activeTab: number;
+  handleTabChange: (event: React.SyntheticEvent, newValue: number) => void;
+  name: string;
+  setName: (name: string) => void;
+  greeting: string;
+  setGreeting: (greeting: string) => void;
+  language: string;
+  setLanguage: (language: string) => void;
+  prompt: string;
+  setPrompt: (prompt: string) => void;
+  whoSpeaksFirst: string;
+  setWhoSpeaksFirst: (whoSpeaksFirst: string) => void;
+  customGreeting: string;
+  setCustomGreeting: (customGreeting: string) => void;
+  ambientSound: string;
+  setAmbientSound: (ambientSound: string) => void;
+  companyInfo: string;
+  setCompanyInfo: (companyInfo: string) => void;
+  objectives: string;
+  setObjectives: (objectives: string) => void;
+  variablesOpen: boolean;
+  handleVariablesToggle: () => void;
+  insertVariable: (variable: string) => void;
+  tags: string[];
+  setTags: (tags: string[]) => void;
+}> = ({
+  open,
+  handleClose,
+  handleSubmit,
+  editingAgent,
+  activeTab,
+  handleTabChange,
+  name,
+  setName,
+  greeting,
+  setGreeting,
+  language,
+  setLanguage,
+  prompt,
+  setPrompt,
+  whoSpeaksFirst,
+  setWhoSpeaksFirst,
+  customGreeting,
+  setCustomGreeting,
+  ambientSound,
+  setAmbientSound,
+  companyInfo,
+  setCompanyInfo,
+  objectives,
+  setObjectives,
+  variablesOpen,
+  handleVariablesToggle,
+  insertVariable,
+  tags,
+  setTags,
+}) => {
+    const [openModal, setOpenModal] = useState(false);
+    const [newActionName, setNewActionName] = useState('');
+    const [newActionDescription, setNewActionDescription] = useState('');
+    const [actions, setActions] = useState<any[]>([]); // Define your actions state here
 
-  return res.json()
-}
+    const handleOpenModal = () => {
+      setOpenModal(true);
+    };
 
-const InvoiceAdd = async () => {
-  // Vars
-  const data = await getData()
+    const handleCloseModal = () => {
+      setOpenModal(false);
+      setNewActionName('');
+      setNewActionDescription('');
+    };
 
-  return (
-    <Grid container spacing={6}>
-      <Grid item xs={12} md={9}>
-        <AddCard invoiceData={data} />
-      </Grid>
-      <Grid item xs={12} md={3}>
-        <AddActions />
-      </Grid>
-    </Grid>
-  )
-}
+    const handleAddAction = () => {
+      const newAction = {
+        id: Date.now(),
+        name: newActionName,
+        description: newActionDescription,
+      };
+      setActions([...actions, newAction]);
+      handleCloseModal();
+    };
 
-export default InvoiceAdd
+    return (
+      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
+        <DialogTitle>{editingAgent ? 'Update Agent' : 'Add Agent'}</DialogTitle>
+        <DialogContent>
+          <Tabs value={activeTab} onChange={handleTabChange}>
+            <Tab label="Settings" />
+            <Tab label="Prompt" />
+            <Tab label="Actions" />
+            <Tab label="Variables" />
+          </Tabs>
+          {activeTab === 0 && (
+            <Box mt={2}>
+              <TextField
+                autoFocus
+                margin="dense"
+                label="Name"
+                type="text"
+                fullWidth
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <TextField
+                margin="dense"
+                label="Greeting"
+                type="text"
+                fullWidth
+                value={greeting}
+                onChange={(e) => setGreeting(e.target.value)}
+              />
+              <FormControl fullWidth margin="dense">
+                <InputLabel>Language</InputLabel>
+                <Select value={language} onChange={(e) => setLanguage(e.target.value as string)}>
+                  {languageOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <TextField
+                margin="dense"
+                label="Ambient Sound"
+                type="text"
+                fullWidth
+                value={ambientSound}
+                onChange={(e) => setAmbientSound(e.target.value)}
+              />
+              <TextField
+                margin="dense"
+                label="Company Info"
+                type="text"
+                fullWidth
+                multiline
+                rows={4}
+                value={companyInfo}
+                onChange={(e) => setCompanyInfo(e.target.value)}
+              />
+              <TextField
+                margin="dense"
+                label="Objectives"
+                type="text"
+                fullWidth
+                multiline
+                rows={4}
+                value={objectives}
+                onChange={(e) => setObjectives(e.target.value)}
+              />
+            </Box>
+          )}
+          {activeTab === 1 && (
+            <Box mt={2}>
+              <TextField
+                margin="dense"
+                label="Who Speaks First"
+                type="text"
+                fullWidth
+                value={whoSpeaksFirst}
+                onChange={(e) => setWhoSpeaksFirst(e.target.value)}
+              />
+              <TextField
+                margin="dense"
+                label="Custom Greeting"
+                type="text"
+                fullWidth
+                value={customGreeting}
+                onChange={(e) => setCustomGreeting(e.target.value)}
+              />
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={handleVariablesToggle}
+                style={{ marginTop: '10px' }}
+              >
+                Insert Variables
+              </Button>
+              {variablesOpen && (
+                <List>
+                  <ListItem button onClick={() => insertVariable('{Current name}')}>
+                    <ListItemText primary="Current name" />
+                  </ListItem>
+                  <ListItem button onClick={() => insertVariable('{Current time}')}>
+                    <ListItemText primary="Current time" />
+                  </ListItem>
+                  <ListItem button onClick={() => insertVariable('{Contact first name}')}>
+                    <ListItemText primary="Contact first name" />
+                  </ListItem>
+                  <ListItem button onClick={() => insertVariable('{Contact phone}')}>
+                    <ListItemText primary="Contact phone" />
+                  </ListItem>
+                  <ListItem button onClick={() => insertVariable('{Contact e-mail}')}>
+                    <ListItemText primary="Contact e-mail" />
+                  </ListItem>
+                </List>
+              )}
+              <TextField
+                margin="dense"
+                label="Prompt"
+                type="text"
+                fullWidth
+                multiline
+                rows={4}
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+              />
+            </Box>
+          )}
+
+          {activeTab === 2 && (
+            <Box mt={2} pl={3}>
+              <Box display="flex" justifyContent="space-between" alignItems="center">
+                <Typography variant="h3">Add An Action</Typography>
+                <Button variant="contained" color="primary" onClick={handleOpenModal}>
+                  Add New Action
+                </Button>
+              </Box>
+              <Grid container spacing={2} mt={2}>
+                {actions.map((action) => (
+                  <Grid item xs={12} sm={6} md={4} lg={3} key={action.id}>
+                    <FunctionCard callInfo={action} />
+                  </Grid>
+                ))}
+              </Grid>
+              <AddAction
+                openModal={openModal}
+                handleCloseModal={handleCloseModal}
+                newActionName={newActionName}
+                setNewActionName={setNewActionName}
+                newActionDescription={newActionDescription}
+                setNewActionDescription={setNewActionDescription}
+                handleAddAction={handleAddAction}
+              />
+            </Box>
+          )}
+
+          {activeTab === 3 && (
+            <Box mt={2}>
+              <Typography variant="h6">Variables Section</Typography>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit} color="primary">
+            {editingAgent ? 'Update' : 'Add'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
+  };
+
+export default AgentDialog;

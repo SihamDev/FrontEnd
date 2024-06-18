@@ -12,13 +12,11 @@ import {
   TableHead,
   TableRow,
   Paper,
-  IconButton,
-  Card,
-  CardContent,
-  CardActions
+  IconButton
 } from '@mui/material';
 import { Delete, Edit, TableRows, ViewModule } from '@mui/icons-material';
-import AgentDialog from '@/components/Agent/AgentDialog';
+import AgentDialog from '../add/page';
+import AgentCard from '@/components/agent/agentCard';
 
 interface Agent {
   id: number;
@@ -26,6 +24,8 @@ interface Agent {
   greeting: string;
   language: string;
   prompt: string;
+  whoSpeaksFirst: string;
+  customGreeting: string;
   ambientSound: string;
   companyInfo: string;
   objectives: string;
@@ -50,46 +50,33 @@ const AgentsList: React.FC = () => {
   const [variablesOpen, setVariablesOpen] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
 
-  const languageOptions = [
-    { value: 'en-US', label: 'English (US)' },
-    { value: 'es-ES', label: 'Spanish (Spain)' },
-    { value: 'fr-FR', label: 'French (France)' },
-    { value: 'de-DE', label: 'German (Germany)' },
-    { value: 'it-IT', label: 'Italian (Italy)' },
-    { value: 'ja-JP', label: 'Japanese (Japan)' },
-    { value: 'zh-CN', label: 'Chinese (Simplified, China)' },
-    { value: 'pt-BR', label: 'Portuguese (Brazil)' },
-    { value: 'ru-RU', label: 'Russian (Russia)' },
-    { value: 'ko-KR', label: 'Korean (South Korea)' },
-    { value: 'ar-SA', label: 'Arabic (Saudi Arabia)' },
-    { value: 'hi-IN', label: 'Hindi (India)' },
-    { value: 'nl-NL', label: 'Dutch (Netherlands)' },
-  ];
+  const handleClickOpen = (agent: Agent) => {
+    setEditingAgent(agent);
+    setName(agent.name);
+    setGreeting(agent.greeting);
+    setLanguage(agent.language);
+    setPrompt(agent.prompt);
+    setWhoSpeaksFirst(agent.whoSpeaksFirst);
+    setCustomGreeting(agent.customGreeting);
+    setAmbientSound(agent.ambientSound);
+    setCompanyInfo(agent.companyInfo);
+    setObjectives(agent.objectives);
+    setTags(agent.tags);
+    setOpen(true);
+  };
 
-  const handleClickOpen = (agent: Agent | null = null) => {
-    if (agent) {
-      setEditingAgent(agent);
-      setName(agent.name);
-      setGreeting(agent.greeting);
-      setLanguage(agent.language);
-      setPrompt(agent.prompt);
-      setWhoSpeaksFirst(agent.prompt);
-      setCustomGreeting(agent.prompt);
-      setAmbientSound(agent.ambientSound);
-      setCompanyInfo(agent.companyInfo);
-      setObjectives(agent.objectives);
-    } else {
-      setEditingAgent(null);
-      setName('');
-      setGreeting('');
-      setLanguage('');
-      setPrompt('');
-      setWhoSpeaksFirst('');
-      setCustomGreeting('');
-      setAmbientSound('');
-      setCompanyInfo('');
-      setObjectives('');
-    }
+  const handleAddAgentClick = () => {
+    setEditingAgent(null);
+    setName('');
+    setGreeting('');
+    setLanguage('');
+    setPrompt('');
+    setWhoSpeaksFirst('');
+    setCustomGreeting('');
+    setAmbientSound('');
+    setCompanyInfo('');
+    setObjectives('');
+    setTags([]);
     setOpen(true);
   };
 
@@ -99,9 +86,33 @@ const AgentsList: React.FC = () => {
 
   const handleSubmit = () => {
     if (editingAgent) {
-      setAgents(agents.map(agent => (agent.id === editingAgent.id ? { ...agent, name, greeting, language, prompt, ambientSound, companyInfo, objectives } : agent)));
+      setAgents(agents.map(agent => (agent.id === editingAgent.id ? {
+        ...agent,
+        name,
+        greeting,
+        language,
+        prompt,
+        whoSpeaksFirst,
+        customGreeting,
+        ambientSound,
+        companyInfo,
+        objectives,
+        tags
+      } : agent)));
     } else {
-      setAgents([...agents, { id: Date.now(), name, greeting, language, prompt, ambientSound, companyInfo, objectives }]);
+      setAgents([...agents, {
+        id: Date.now(),
+        name,
+        greeting,
+        language,
+        prompt,
+        whoSpeaksFirst,
+        customGreeting,
+        ambientSound,
+        companyInfo,
+        objectives,
+        tags
+      }]);
     }
     handleClose();
   };
@@ -131,7 +142,7 @@ const AgentsList: React.FC = () => {
       <Typography variant="h4" component="h1" gutterBottom>
         Agents
       </Typography>
-      <Button variant="contained" color="primary" onClick={() => handleClickOpen()}>
+      <Button variant="contained" color="primary" onClick={handleAddAgentClick}>
         Add Agent
       </Button>
       <Button variant="contained" color="secondary" onClick={handleViewToggle} style={{ marginLeft: '10px' }}>
@@ -171,21 +182,12 @@ const AgentsList: React.FC = () => {
       ) : (
         <div style={{ display: 'flex', flexWrap: 'wrap', marginTop: '20px' }}>
           {agents.map((agent) => (
-            <Card key={agent.id} style={{ margin: '10px', width: '300px' }}>
-              <CardContent>
-                <Typography variant="h6">{agent.name}</Typography>
-                <Typography color="textSecondary">{agent.greeting}</Typography>
-                <Typography color="textSecondary">{agent.language}</Typography>
-              </CardContent>
-              <CardActions>
-                <IconButton onClick={() => handleClickOpen(agent)}>
-                  <Edit />
-                </IconButton>
-                <IconButton onClick={() => handleDelete(agent.id)}>
-                  <Delete />
-                </IconButton>
-              </CardActions>
-            </Card>
+            <AgentCard
+              agent={agent}
+              key={agent.id}
+              handleClickOpen={handleClickOpen}
+              handleDelete={handleDelete}
+            />
           ))}
         </div>
       )}
@@ -221,8 +223,7 @@ const AgentsList: React.FC = () => {
         tags={tags}
         setTags={setTags}
       />
-
-    </Container >
+    </Container>
   );
 };
 
