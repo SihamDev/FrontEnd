@@ -146,7 +146,7 @@ const AgentDialog: React.FC<{
             <Tab label="Settings" />
             <Tab label="Prompt" />
             <Tab label="Actions" />
-            <Tab label="Variables" />
+            {/* <Tab label="Variables" /> */}
           </Tabs>
           {activeTab === 0 && (
             <Box mt={2}>
@@ -290,11 +290,13 @@ const AgentDialog: React.FC<{
             </Box>
           )}
 
+          {/* 
           {activeTab === 3 && (
             <Box mt={2}>
               <Typography variant="h6">Variables Section</Typography>
             </Box>
-          )}
+          )} */}
+
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">

@@ -104,15 +104,6 @@ const VerticalMenu = ({ dictionary, scrollMenu }: Props) => {
         </MenuItem>
 
         <MenuItem
-          href={`/${locale}/apps/myagent/list`}
-          icon={<i className='tabler-user-check' />}
-          className={activeLink === `/${locale}/apps/myagent/list` ? 'mui-1xxq1dc' : ''}
-          onClick={() => handleMenuItemClick(`/${locale}/apps/myagent/list`)}
-        >
-          {dictionary['navigation'].myagent}
-        </MenuItem>
-
-        <MenuItem
           href={`/${locale}/apps/logs/list`}
           icon={<i className='tabler-file-text' />}
           className={activeLink === `/${locale}/apps/logs/list` ? 'mui-1xxq1dc' : ''}
