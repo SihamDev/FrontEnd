@@ -116,7 +116,7 @@ const AgentDialog: React.FC<{
     const [openModal, setOpenModal] = useState(false);
     const [newActionName, setNewActionName] = useState('');
     const [newActionDescription, setNewActionDescription] = useState('');
-    const [actions, setActions] = useState<any[]>([]); // Define your actions state here
+    const [actions, setActions] = useState<any[]>([]);
 
     const handleOpenModal = () => {
       setOpenModal(true);
@@ -275,9 +275,7 @@ const AgentDialog: React.FC<{
               </Box>
               <Grid container spacing={2} mt={2}>
                 {actions.map((action) => (
-                  <Grid item xs={12} sm={6} md={4} lg={3} key={action.id}>
-                    <FunctionCard callInfo={action} />
-                  </Grid>
+                  <FunctionCard callInfo={action} key={action.id} />
                 ))}
               </Grid>
               <AddAction

@@ -149,6 +149,7 @@ const AgentsList: React.FC = () => {
         {view === 'table' ? <ViewModule /> : <TableRows />}
       </Button>
 
+      {/* ================================= LIST OF AGENTS START ================================= */}
       {view === 'table' ? (
         <TableContainer component={Paper} style={{ marginTop: '20px' }}>
           <Table>
@@ -191,7 +192,10 @@ const AgentsList: React.FC = () => {
           ))}
         </div>
       )}
+      {/* ================================= LIST OF AGENTS END ================================= */}
 
+
+      {/* ================================= ADD NEW AGENT DIALOG START ================================= */}
       <AgentDialog
         open={open}
         handleClose={handleClose}
@@ -223,6 +227,8 @@ const AgentsList: React.FC = () => {
         tags={tags}
         setTags={setTags}
       />
+      {/* ================================= ADD NEW AGENT DIALOG END ================================= */}
+
     </Container>
   );
 };
