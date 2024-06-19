@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card, CardContent, Typography, CardActions, IconButton } from '@mui/material';
-import { Edit, Delete } from '@mui/icons-material';
+import { Card, CardContent, Typography, CardActions, IconButton, Button } from '@mui/material';
+import { Edit, Delete, Chat } from '@mui/icons-material';
 
 interface Agent {
     id: number;
@@ -24,16 +24,26 @@ interface AgentCardProps {
 
 const AgentCard: React.FC<AgentCardProps> = ({ agent, handleClickOpen, handleDelete }) => {
     return (
-        <Card style={{ margin: '10px', minWidth: '300px' }}>
+        <Card style={{ margin: '10px', minWidth: '500px' }}>
             <CardContent>
-                <Typography variant="h5" component="div">
-                    {agent.name}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Typography variant="h2" component="div">
+                        {agent.name}
+                    </Typography>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        startIcon={<Chat />}
+                        onClick={() => {/* talk functionality here */ }}
+                    >
+                        Talk
+                    </Button>
+                </div>
+                <Typography color="textSecondary">
+                    Greeting: {agent.greeting}
                 </Typography>
                 <Typography color="textSecondary">
-                    {agent.greeting}
-                </Typography>
-                <Typography color="textSecondary">
-                    {agent.language}
+                    Language: {agent.language}
                 </Typography>
             </CardContent>
             <CardActions>

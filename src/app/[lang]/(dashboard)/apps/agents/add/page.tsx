@@ -146,7 +146,6 @@ const AgentDialog: React.FC<{
             <Tab label="Settings" />
             <Tab label="Prompt" />
             <Tab label="Actions" />
-            {/* <Tab label="Variables" /> */}
           </Tabs>
           {activeTab === 0 && (
             <Box mt={2}>
@@ -264,7 +263,6 @@ const AgentDialog: React.FC<{
               />
             </Box>
           )}
-
           {activeTab === 2 && (
             <Box mt={2} pl={3}>
               <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -289,20 +287,12 @@ const AgentDialog: React.FC<{
               />
             </Box>
           )}
-
-          {/* 
-          {activeTab === 3 && (
-            <Box mt={2}>
-              <Typography variant="h6">Variables Section</Typography>
-            </Box>
-          )} */}
-
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleSubmit} color="primary">
+          <Button onClick={handleSubmit} color="primary" disabled={!name}>
             {editingAgent ? 'Update' : 'Add'}
           </Button>
         </DialogActions>

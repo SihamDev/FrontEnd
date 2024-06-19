@@ -14,7 +14,7 @@ import {
   Paper,
   IconButton
 } from '@mui/material';
-import { Delete, Edit, TableRows, ViewModule } from '@mui/icons-material';
+import { Chat, Delete, Edit, TableRows, ViewModule } from '@mui/icons-material';
 import AgentDialog from '../add/page';
 import AgentCard from '@/components/agent/agentCard';
 
@@ -158,6 +158,7 @@ const AgentsList: React.FC = () => {
                 <TableCell>Name</TableCell>
                 <TableCell>Greeting</TableCell>
                 <TableCell>Language</TableCell>
+                <TableCell>Call</TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -167,6 +168,16 @@ const AgentsList: React.FC = () => {
                   <TableCell>{agent.name}</TableCell>
                   <TableCell>{agent.greeting}</TableCell>
                   <TableCell>{agent.language}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      startIcon={<Chat />}
+                      onClick={() => {/* talk functionality here */ }}
+                    >
+                      Talk
+                    </Button>
+                  </TableCell>
                   <TableCell>
                     <IconButton onClick={() => handleClickOpen(agent)}>
                       <Edit />
