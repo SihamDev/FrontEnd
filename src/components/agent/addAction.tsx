@@ -38,6 +38,8 @@ const AddAction: React.FC<AddActionProps> = ({
                     label="Action Description"
                     type="text"
                     fullWidth
+                    multiline
+                    rows={4}
                     value={newActionDescription}
                     onChange={(e) => setNewActionDescription(e.target.value)}
                 />
