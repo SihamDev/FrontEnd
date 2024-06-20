@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Container,
   Typography,
@@ -17,6 +17,8 @@ import {
 import { Chat, Delete, Edit, TableRows, ViewModule } from '@mui/icons-material';
 import AgentDialog from '../add/page';
 import AgentCard from '@/components/agent/agentCard';
+import { getAssistants } from '@/app/api/functions/agents';
+// import {getAssistants} from "."
 
 interface Agent {
   id: number;
@@ -49,6 +51,23 @@ const AgentsList: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [variablesOpen, setVariablesOpen] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchAgents = async () => {
+      try {
+        const assistantsRes = await getAssistants();
+        console.log(assistantsRes, "**");
+
+        if (assistantsRes.status === 200) {
+          // setAgents(assistantsRes.data)
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    fetchAgents();
+  }, []);
 
   const handleClickOpen = (agent: Agent) => {
     setEditingAgent(agent);
