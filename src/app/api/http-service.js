@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "http://localhost:8080/api/v1/",
+    baseURL: "https://api.vapi.ai/",
 });
 
 // Request interceptor to include the token in headers

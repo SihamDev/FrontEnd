@@ -15,87 +15,86 @@ import {
   IconButton
 } from '@mui/material';
 import { Chat, Delete, Edit, TableRows, ViewModule } from '@mui/icons-material';
-import AgentDialog from '../add/page';
+import AgentDialog from '@/components/agent/AgentDialog';
 import AgentCard from '@/components/agent/agentCard';
 import { getAssistants } from '@/app/api/functions/agents';
-// import {getAssistants} from "."
 
 interface Agent {
-  id: number;
+  id: string;
   name: string;
-  greeting: string;
-  language: string;
-  prompt: string;
-  whoSpeaksFirst: string;
-  customGreeting: string;
-  ambientSound: string;
-  companyInfo: string;
-  objectives: string;
-  tags: string[];
+  createdAt: string;
+  updatedAt: string;
+  voice: {
+    provider: string;
+    voiceId: string;
+    similarityBoost: number;
+    stability: number;
+  };
+  model: {
+    provider: string;
+    functions?: Function[];
+    maxTokens: number;
+    messages: [{ role: string, content: string }, { role: string, content: string }]
+  };
+  voicemailMessage: string;
 }
+
+interface Assistant {
+  id: string;
+  name: string;
+  voiceProvider: string;
+  modelProvider: string;
+  createdAt: string;
+  functions?: Function[];
+}
+
+const transformAssistantToAgent = (assistant: Assistant): Agent => ({
+  id: assistant.id,
+  name: assistant.name,
+  createdAt: assistant.createdAt,
+  updatedAt: assistant.createdAt,
+  voice: {
+    provider: assistant.voiceProvider,
+    voiceId: '',
+    similarityBoost: 0,
+    stability: 0,
+  },
+  model: {
+    provider: assistant.modelProvider,
+    functions: assistant.functions,
+    maxTokens: 0,
+    messages: [{ role: 'user', content: '' }, { role: 'assistant', content: '' }],
+  },
+  voicemailMessage: '',
+});
 
 const AgentsList: React.FC = () => {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [open, setOpen] = useState(false);
   const [editingAgent, setEditingAgent] = useState<Agent | null>(null);
-  const [name, setName] = useState('');
-  const [greeting, setGreeting] = useState('');
-  const [language, setLanguage] = useState('');
-  const [prompt, setPrompt] = useState('');
-  const [whoSpeaksFirst, setWhoSpeaksFirst] = useState('');
-  const [customGreeting, setCustomGreeting] = useState('');
-  const [ambientSound, setAmbientSound] = useState('');
-  const [companyInfo, setCompanyInfo] = useState('');
-  const [objectives, setObjectives] = useState('');
   const [view, setView] = useState<'table' | 'card'>('table');
-  const [activeTab, setActiveTab] = useState(0);
-  const [variablesOpen, setVariablesOpen] = useState(false);
-  const [tags, setTags] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchAgents = async () => {
       try {
         const assistantsRes = await getAssistants();
-        console.log(assistantsRes, "**");
-
-        if (assistantsRes.status === 200) {
-          // setAgents(assistantsRes.data)
-        }
+        console.log("**", assistantsRes.data);
+        setAgents(assistantsRes.data);
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
-    }
+    };
 
     fetchAgents();
   }, []);
 
   const handleClickOpen = (agent: Agent) => {
     setEditingAgent(agent);
-    setName(agent.name);
-    setGreeting(agent.greeting);
-    setLanguage(agent.language);
-    setPrompt(agent.prompt);
-    setWhoSpeaksFirst(agent.whoSpeaksFirst);
-    setCustomGreeting(agent.customGreeting);
-    setAmbientSound(agent.ambientSound);
-    setCompanyInfo(agent.companyInfo);
-    setObjectives(agent.objectives);
-    setTags(agent.tags);
     setOpen(true);
   };
 
   const handleAddAgentClick = () => {
     setEditingAgent(null);
-    setName('');
-    setGreeting('');
-    setLanguage('');
-    setPrompt('');
-    setWhoSpeaksFirst('');
-    setCustomGreeting('');
-    setAmbientSound('');
-    setCompanyInfo('');
-    setObjectives('');
-    setTags([]);
     setOpen(true);
   };
 
@@ -103,57 +102,21 @@ const AgentsList: React.FC = () => {
     setOpen(false);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (newAgent: Agent) => {
     if (editingAgent) {
-      setAgents(agents.map(agent => (agent.id === editingAgent.id ? {
-        ...agent,
-        name,
-        greeting,
-        language,
-        prompt,
-        whoSpeaksFirst,
-        customGreeting,
-        ambientSound,
-        companyInfo,
-        objectives,
-        tags
-      } : agent)));
+      setAgents(agents.map(agent => (agent.id === editingAgent.id ? newAgent : agent)));
     } else {
-      setAgents([...agents, {
-        id: Date.now(),
-        name,
-        greeting,
-        language,
-        prompt,
-        whoSpeaksFirst,
-        customGreeting,
-        ambientSound,
-        companyInfo,
-        objectives,
-        tags
-      }]);
+      setAgents([...agents, newAgent]);
     }
     handleClose();
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
     setAgents(agents.filter(agent => agent.id !== id));
   };
 
   const handleViewToggle = () => {
     setView(view === 'table' ? 'card' : 'table');
-  };
-
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setActiveTab(newValue);
-  };
-
-  const handleVariablesToggle = () => {
-    setVariablesOpen(!variablesOpen);
-  };
-
-  const insertVariable = (variable: string) => {
-    setCustomGreeting(customGreeting + ' ' + variable);
   };
 
   return (
@@ -168,25 +131,34 @@ const AgentsList: React.FC = () => {
         {view === 'table' ? <ViewModule /> : <TableRows />}
       </Button>
 
-      {/* ================================= LIST OF AGENTS START ================================= */}
       {view === 'table' ? (
         <TableContainer component={Paper} style={{ marginTop: '20px' }}>
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell>Name</TableCell>
-                <TableCell>Greeting</TableCell>
-                <TableCell>Language</TableCell>
-                <TableCell>Call</TableCell>
+                <TableCell>Voice Provider</TableCell>
+                <TableCell>Model Provider</TableCell>
+                <TableCell>Created At</TableCell>
                 <TableCell>Actions</TableCell>
+                <TableCell></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {agents.map((agent) => (
                 <TableRow key={agent.id}>
                   <TableCell>{agent.name}</TableCell>
-                  <TableCell>{agent.greeting}</TableCell>
-                  <TableCell>{agent.language}</TableCell>
+                  <TableCell>{agent.voice.provider}</TableCell>
+                  <TableCell>{agent.model.provider}</TableCell>
+                  <TableCell>{new Date(agent.createdAt).toLocaleString()}</TableCell>
+                  <TableCell>
+                    <IconButton onClick={() => handleClickOpen(agent)}>
+                      <Edit />
+                    </IconButton>
+                    <IconButton onClick={() => handleDelete(agent.id)}>
+                      <Delete />
+                    </IconButton>
+                  </TableCell>
                   <TableCell>
                     <Button
                       variant="contained"
@@ -196,14 +168,6 @@ const AgentsList: React.FC = () => {
                     >
                       Talk
                     </Button>
-                  </TableCell>
-                  <TableCell>
-                    <IconButton onClick={() => handleClickOpen(agent)}>
-                      <Edit />
-                    </IconButton>
-                    <IconButton onClick={() => handleDelete(agent.id)}>
-                      <Delete />
-                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))}
@@ -222,43 +186,13 @@ const AgentsList: React.FC = () => {
           ))}
         </div>
       )}
-      {/* ================================= LIST OF AGENTS END ================================= */}
 
-
-      {/* ================================= ADD NEW AGENT DIALOG START ================================= */}
       <AgentDialog
         open={open}
         handleClose={handleClose}
         handleSubmit={handleSubmit}
         editingAgent={editingAgent}
-        activeTab={activeTab}
-        handleTabChange={handleTabChange}
-        name={name}
-        setName={setName}
-        greeting={greeting}
-        setGreeting={setGreeting}
-        language={language}
-        setLanguage={setLanguage}
-        prompt={prompt}
-        setPrompt={setPrompt}
-        whoSpeaksFirst={whoSpeaksFirst}
-        setWhoSpeaksFirst={setWhoSpeaksFirst}
-        customGreeting={customGreeting}
-        setCustomGreeting={setCustomGreeting}
-        ambientSound={ambientSound}
-        setAmbientSound={setAmbientSound}
-        companyInfo={companyInfo}
-        setCompanyInfo={setCompanyInfo}
-        objectives={objectives}
-        setObjectives={setObjectives}
-        variablesOpen={variablesOpen}
-        handleVariablesToggle={handleVariablesToggle}
-        insertVariable={insertVariable}
-        tags={tags}
-        setTags={setTags}
       />
-      {/* ================================= ADD NEW AGENT DIALOG END ================================= */}
-
     </Container>
   );
 };
