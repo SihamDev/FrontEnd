@@ -110,6 +110,7 @@ const AgentDialog: React.FC<{
     const [model, setModel] = useState('');
     const [endCallMessage, setEndCallMessage] = useState('');
     const [voicemailMessage, setVoicemailMessage] = useState('');
+    const [functionsList, setFunctionsList] = useState([]);
 
     useEffect(() => {
         if (editingAgent) {
@@ -126,6 +127,7 @@ const AgentDialog: React.FC<{
             setModel(editingAgent.model);
             setEndCallMessage(editingAgent.endCallMessage || '');
             setVoicemailMessage(editingAgent.voicemailMessage || '');
+            setFunctionsList(editingAgent.model.functions || []);
         }
     }, [editingAgent]);
 
@@ -230,8 +232,8 @@ const AgentDialog: React.FC<{
                     <Box mt={2} pl={3}>
                         <Typography variant="h3">Actions</Typography>
                         <Grid container spacing={2} mt={2}>
-                            {functions && functions.map((func) => (
-                                <FunctionCard function={func} key={func.name} />
+                            {functionsList && functionsList.map((func) => (
+                                <FunctionCard func={func} key={func.name} />
                             ))}
                         </Grid>
                         <AddAction />
