@@ -15,6 +15,8 @@ import {
   IconButton
 } from '@mui/material';
 import { Chat, Delete, Edit, TableRows, ViewModule } from '@mui/icons-material';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import AgentDialog from '@/components/agent/AgentDialog';
 import AgentCard from '@/components/agent/agentCard';
 import { createAssistant, getAssistants } from '@/app/api/functions/agents';
@@ -78,7 +80,6 @@ const AgentsList: React.FC = () => {
     const fetchAgents = async () => {
       try {
         const assistantsRes = await getAssistants();
-        // console.log("**", assistantsRes.data);
         setAgents(assistantsRes.data);
       } catch (error) {
         console.error(error);
@@ -103,14 +104,6 @@ const AgentsList: React.FC = () => {
   };
 
   const handleSubmit = async (newAgent: Agent) => {
-    console.log("newagent => ", newAgent);
-
-
-    // console.log("newAgent.name ", newAgent.name);
-    // console.log("newAgent.prompt ", newAgent.prompt),
-    //   console.log("newAgent.firstMessage ", newAgent.firstMessage)
-    // console.log("functionsList ", newAgent.functionsList),
-
     const data = {
       name: newAgent.name,
       model: {
@@ -130,8 +123,9 @@ const AgentsList: React.FC = () => {
 
     try {
       const response = await createAssistant(data);
-
+      toast.success('Agent created successfully!');
     } catch (error) {
+      toast.error('Failed to create agent.');
       console.error(error);
     }
 
@@ -148,6 +142,7 @@ const AgentsList: React.FC = () => {
 
   return (
     <Container>
+      <ToastContainer />
       <Typography variant="h4" component="h1" gutterBottom>
         Agents
       </Typography>
