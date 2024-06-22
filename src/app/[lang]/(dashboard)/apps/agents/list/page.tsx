@@ -17,7 +17,7 @@ import {
 import { Chat, Delete, Edit, TableRows, ViewModule } from '@mui/icons-material';
 import AgentDialog from '@/components/agent/AgentDialog';
 import AgentCard from '@/components/agent/agentCard';
-import { getAssistants } from '@/app/api/functions/agents';
+import { createAssistant, getAssistants } from '@/app/api/functions/agents';
 
 interface Agent {
   id: string;
@@ -78,7 +78,7 @@ const AgentsList: React.FC = () => {
     const fetchAgents = async () => {
       try {
         const assistantsRes = await getAssistants();
-        console.log("**", assistantsRes.data);
+        // console.log("**", assistantsRes.data);
         setAgents(assistantsRes.data);
       } catch (error) {
         console.error(error);
@@ -102,12 +102,39 @@ const AgentsList: React.FC = () => {
     setOpen(false);
   };
 
-  const handleSubmit = (newAgent: Agent) => {
-    if (editingAgent) {
-      setAgents(agents.map(agent => (agent.id === editingAgent.id ? newAgent : agent)));
-    } else {
-      setAgents([...agents, newAgent]);
+  const handleSubmit = async (newAgent: Agent) => {
+    console.log("newagent => ", newAgent);
+
+
+    // console.log("newAgent.name ", newAgent.name);
+    // console.log("newAgent.prompt ", newAgent.prompt),
+    //   console.log("newAgent.firstMessage ", newAgent.firstMessage)
+    // console.log("functionsList ", newAgent.functionsList),
+
+    const data = {
+      name: newAgent.name,
+      model: {
+        provider: "openai",
+        model: "gpt-3.5-turbo",
+        temperature: 0.7,
+        systemPrompt: newAgent.prompt,
+        functions: newAgent.functionsList
+      },
+      voice: {
+        provider: "11labs",
+        voiceId: "pFZP5JQG7iQjIQuC4Bku"
+      },
+      firstMessage: newAgent.firstMessage,
+      serverUrl: "https://webhook.site/20988bdc-a6f7-41b8-af41-8978220de89c"
+    };
+
+    try {
+      const response = await createAssistant(data);
+
+    } catch (error) {
+      console.error(error);
     }
+
     handleClose();
   };
 
@@ -148,8 +175,8 @@ const AgentsList: React.FC = () => {
               {agents.map((agent) => (
                 <TableRow key={agent.id}>
                   <TableCell>{agent.name}</TableCell>
-                  <TableCell>{agent.voice.provider}</TableCell>
-                  <TableCell>{agent.model.provider}</TableCell>
+                  <TableCell>{agent?.voice?.provider}</TableCell>
+                  <TableCell>{agent?.model?.provider}</TableCell>
                   <TableCell>{new Date(agent.createdAt).toLocaleString()}</TableCell>
                   <TableCell>
                     <IconButton onClick={() => handleClickOpen(agent)}>

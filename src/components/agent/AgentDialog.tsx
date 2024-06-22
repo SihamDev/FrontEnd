@@ -57,37 +57,7 @@ const languageOptions = [
     { value: 'nl-NL', label: 'Dutch (Netherlands)' },
 ];
 
-const modelsOptions = [
-    { value: 'nova-2', label: 'Nova 2' },
-    { value: 'nova-2-generate', label: 'Nova 2 Generate' },
-    { value: 'nova-2-meeting', label: 'Nova 2 Meeting' },
-    { value: 'nova-2-general', label: 'Nova 2 General' },
-    { value: 'nova-2-phonecall', label: 'Nova 2 Phonecall' },
-    { value: 'nova-2-finance', label: 'Nova 2 Finance' },
-    { value: 'nova-2-conversationalai', label: 'Nova 2 Conversational AI' },
-    { value: 'nova-2-voicemail', label: 'Nova 2 Voicemail' },
-    { value: 'nova-2-video', label: 'Nova 2 Video' },
-    { value: 'nova-2-medical', label: 'Nova 2 Medical' },
-    { value: 'nova-2-drivethru', label: 'Nova 2 Drive Thru' },
-    { value: 'nova-2-automotive', label: 'Nova 2 Automotive' },
-    { value: 'nova', label: 'Nova' },
-    { value: 'nova-general', label: 'Nova General' },
-    { value: 'nova-phonecall', label: 'Nova Phonecall' },
-    { value: 'nova-medical', label: 'Nova Medical' },
-    { value: 'enhanced', label: 'Enhanced' },
-    { value: 'enhanced-general', label: 'Enhanced General' },
-    { value: 'enhanced-meeting', label: 'Enhanced Meeting' },
-    { value: 'enhanced-phonecall', label: 'Enhanced Phonecall' },
-    { value: 'enhanced-finance', label: 'Enhanced Finance' },
-    { value: 'base', label: 'Base' },
-    { value: 'base-general', label: 'Base General' },
-    { value: 'base-meeting', label: 'Base Meeting' },
-    { value: 'base-phonecall', label: 'Base Phonecall' },
-    { value: 'base-finance', label: 'Base Finance' },
-    { value: 'base-conversationalai', label: 'Base Conversational AI' },
-    { value: 'base-voicemail', label: 'Base Voicemail' },
-    { value: 'base-video', label: 'Base Video' },
-];
+
 
 const AgentDialog: React.FC<{
     open: boolean;
@@ -95,19 +65,12 @@ const AgentDialog: React.FC<{
     handleSubmit: (agent: Agent) => void;
     editingAgent: Agent | null;
     functions: Function[];
-}> = ({ open, handleClose, handleSubmit, editingAgent, functions }) => {
+}> = ({ open, handleClose, handleSubmit, editingAgent }) => {
     const [activeTab, setActiveTab] = useState(0);
     const [name, setName] = useState('');
     const [firstMessage, setFirstMessage] = useState('');
     const [language, setLanguage] = useState('en-US');
     const [prompt, setPrompt] = useState('');
-    const [whoSpeaksFirst, setWhoSpeaksFirst] = useState('');
-    const [customGreeting, setCustomGreeting] = useState('');
-    const [ambientSound, setAmbientSound] = useState('');
-    const [companyInfo, setCompanyInfo] = useState('');
-    const [objectives, setObjectives] = useState('');
-    const [tags, setTags] = useState<string[]>([]);
-    const [model, setModel] = useState('');
     const [endCallMessage, setEndCallMessage] = useState('');
     const [voicemailMessage, setVoicemailMessage] = useState('');
     const [functionsList, setFunctionsList] = useState([]);
@@ -118,13 +81,6 @@ const AgentDialog: React.FC<{
             setFirstMessage(editingAgent.firstMessage);
             setLanguage(editingAgent.transcriber.language);
             setPrompt(editingAgent.model.messages[0].content);
-            setWhoSpeaksFirst(editingAgent.whoSpeaksFirst);
-            setCustomGreeting(editingAgent.customGreeting);
-            setAmbientSound(editingAgent.ambientSound);
-            setCompanyInfo(editingAgent.companyInfo);
-            setObjectives(editingAgent.objectives);
-            setTags(editingAgent.tags);
-            setModel(editingAgent.model);
             setEndCallMessage(editingAgent.endCallMessage || '');
             setVoicemailMessage(editingAgent.voicemailMessage || '');
             setFunctionsList(editingAgent.model.functions || []);
@@ -137,24 +93,18 @@ const AgentDialog: React.FC<{
 
     const handleSubmitForm = () => {
         const newAgent: Agent = {
-            id: editingAgent ? editingAgent.id : Date.now(),
             name,
-            greeting: firstMessage,
+            firstMessage,
             language,
             prompt,
-            whoSpeaksFirst,
-            customGreeting,
-            ambientSound,
-            companyInfo,
-            objectives,
-            tags,
-            model,
             endCallMessage,
             voicemailMessage,
+            functionsList
         };
         handleSubmit(newAgent);
         handleClose();
     };
+
 
     return (
         <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
