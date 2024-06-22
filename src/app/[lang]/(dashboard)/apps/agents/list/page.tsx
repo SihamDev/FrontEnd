@@ -79,6 +79,7 @@ const AgentsList: React.FC = () => {
 
     try {
       const response = await createAssistant(data);
+      setAgents([...agents, response.data]);
       toast.success('Agent created successfully!');
     } catch (error) {
       toast.error('Failed to create agent.');
@@ -100,6 +101,8 @@ const AgentsList: React.FC = () => {
       toast.error('Failed to update agent.');
       console.error(error);
     }
+
+    handleClose();
   };
 
   const handleDelete = async (id: string) => {

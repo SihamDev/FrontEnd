@@ -27,18 +27,12 @@ interface Function {
 interface Agent {
     id: number;
     name: string;
-    greeting: string;
+    firstMessage: string;
     language: string;
     prompt: string;
-    whoSpeaksFirst: string;
-    customGreeting: string;
-    ambientSound: string;
-    companyInfo: string;
-    objectives: string;
-    tags: string[];
-    model: string;
     endCallMessage: string;
     voicemailMessage: string;
+    functionsList: Function[];
 }
 
 const languageOptions = [
@@ -57,14 +51,11 @@ const languageOptions = [
     { value: 'nl-NL', label: 'Dutch (Netherlands)' },
 ];
 
-
-
 const AgentDialog: React.FC<{
     open: boolean;
     handleClose: () => void;
     handleSubmit: (agent: Agent) => void;
     editingAgent: Agent | null;
-    functions: Function[];
 }> = ({ open, handleClose, handleSubmit, editingAgent }) => {
     const [activeTab, setActiveTab] = useState(0);
     const [name, setName] = useState('');
@@ -73,17 +64,17 @@ const AgentDialog: React.FC<{
     const [prompt, setPrompt] = useState('');
     const [endCallMessage, setEndCallMessage] = useState('');
     const [voicemailMessage, setVoicemailMessage] = useState('');
-    const [functionsList, setFunctionsList] = useState([]);
+    const [functionsList, setFunctionsList] = useState<Function[]>([]);
 
     useEffect(() => {
         if (editingAgent) {
             setName(editingAgent.name);
             setFirstMessage(editingAgent.firstMessage);
-            setLanguage(editingAgent.transcriber.language);
-            setPrompt(editingAgent.model.messages[0].content);
+            setLanguage(editingAgent.language);
+            setPrompt(editingAgent.prompt);
             setEndCallMessage(editingAgent.endCallMessage || '');
             setVoicemailMessage(editingAgent.voicemailMessage || '');
-            setFunctionsList(editingAgent.model.functions || []);
+            setFunctionsList(editingAgent.functionsList || []);
         }
     }, [editingAgent]);
 
@@ -93,18 +84,18 @@ const AgentDialog: React.FC<{
 
     const handleSubmitForm = () => {
         const newAgent: Agent = {
+            id: editingAgent ? editingAgent.id : 0, // Assigning 0 if creating a new agent
             name,
             firstMessage,
             language,
             prompt,
             endCallMessage,
             voicemailMessage,
-            functionsList
+            functionsList,
         };
         handleSubmit(newAgent);
         handleClose();
     };
-
 
     return (
         <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
@@ -200,7 +191,6 @@ const AgentDialog: React.FC<{
             </DialogActions>
         </Dialog>
     );
-
 };
 
 export default AgentDialog;
