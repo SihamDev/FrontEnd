@@ -37,6 +37,7 @@
     "@prisma/client": "5.10.2",
     "@tanstack/match-sorter-utils": "8.11.8",
     "@tanstack/react-table": "8.13.2",
+    "@vapi-ai/web": "^1.4.2",
     "apexcharts": "3.47.0",
     "bootstrap-icons": "1.11.3",
     "classnames": "2.5.1",

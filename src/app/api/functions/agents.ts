@@ -3,14 +3,10 @@ import api from "../http-service";
 interface Assistant {
     id: number;
     name: string;
-    greeting: string;
     language: string;
     prompt: string;
     whoSpeaksFirst: string;
     customGreeting: string;
-    ambientSound: string;
-    companyInfo: string;
-    objectives: string;
     tags: string[];
 }
 
@@ -29,4 +25,5 @@ export const updateAssistant = (id: number, data: Partial<Assistant>) => api.pat
 // Delete Assistant
 export const deleteAssistant = (id: number) => api.delete(`/assistant/${id}`);
 
-// export const callAssistant 
+// Call Assistant
+export const callAssistant = (data: any) => api.post<Assistant>(`/call`, data);

@@ -1,7 +1,7 @@
-// @ts-nocheck
-"use client";
+"use client"
 
 import React, { useEffect, useState } from 'react';
+import Vapi from '@vapi-ai/web';
 import {
   Container,
   Typography,
@@ -23,7 +23,7 @@ import { Edit, Delete, Phone, ViewModule, TableRows } from '@mui/icons-material'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AgentDialog from '@/components/agent/AgentDialog';
-import { getAssistants, createAssistant, updateAssistant as updateAssistantApi, deleteAssistant, updateAssistant } from '@/app/api/functions/agents';
+import { getAssistants, createAssistant, updateAssistant, deleteAssistant } from '@/app/api/functions/agents';
 import { Agent } from '@/types/Agent';
 
 const AgentsList: React.FC = () => {
@@ -60,70 +60,20 @@ const AgentsList: React.FC = () => {
   };
 
   const handleSubmit = async (agent: Agent) => {
-    const data = {
-      name: agent.name,
-      model: {
-        provider: "openai",
-        model: "gpt-3.5-turbo",
-        temperature: 0.7,
-        systemPrompt: agent.prompt,
-        functions: agent.functionsList
-      },
-      voice: {
-        provider: "11labs",
-        voiceId: "pFZP5JQG7iQjIQuC4Bku"
-      },
-      firstMessage: agent.firstMessage,
-      serverUrl: "https://webhook.site/20988bdc-a6f7-41b8-af41-8978220de89c"
-    };
-
     try {
       if (agent.id) {
-        // Call the update API
-        const res = await updateAssistant(agent.id, data);
+        const res = await updateAssistant(agent.id, agent);
         if (res.status === 200) {
           setAgents(agents.map(a => a.id === agent.id ? res.data : a));
           toast.success('Agent updated successfully!');
         }
       } else {
-        // Call the create API
-        const response = await createAssistant(data);
+        const response = await createAssistant(agent);
         setAgents([...agents, response.data]);
         toast.success('Agent created successfully!');
       }
     } catch (error) {
       toast.error(agent.id ? 'Failed to update agent.' : 'Failed to create agent.');
-      console.error(error);
-    }
-
-    handleClose();
-  };
-
-
-  const handleUpdate = async (updatedAgent: Agent) => {
-    const data = {
-      name: updatedAgent.name,
-      model: {
-        provider: "openai",
-        model: "gpt-3.5-turbo",
-        temperature: 0.7,
-        systemPrompt: updatedAgent.prompt,
-        functions: updatedAgent.functionsList
-      },
-      voice: {
-        provider: "11labs",
-        voiceId: "pFZP5JQG7iQjIQuC4Bku"
-      },
-      firstMessage: updatedAgent.firstMessage,
-      serverUrl: "https://webhook.site/20988bdc-a6f7-41b8-af41-8978220de89c"
-    };
-    try {
-      const res = await updateAssistant(updatedAgent.id, data);
-      if (res.status === 200) {
-        toast.success('Agent updated successfully!');
-      }
-    } catch (error) {
-      toast.error('Failed to create agent.');
       console.error(error);
     }
 
@@ -148,20 +98,114 @@ const AgentsList: React.FC = () => {
 
   const handleCall = async (agent: Agent) => {
     try {
-      console.log("Starting conversation with:", agent.name);
-      const response = await fetch('https://api.vapi.ai/call', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ agentId: agent.id })
+      const vapi = new Vapi('7abfc5b1-4695-492e-aecb-c0db750f9b80');
+
+      vapi.on('message', (message) => {
+        console.log('Received message:', message);
       });
-      const data = await response.json();
-      if (response.ok) {
+
+      vapi.on('call-start', () => {
+        console.log('Call has started');
         toast.success(`Started conversation with ${agent.name}!`);
-      } else {
-        toast.error(`Failed to start conversation with ${agent.name}.`);
-      }
+      });
+
+      vapi.on('call-end', () => {
+        console.log('Call has ended');
+      });
+
+      console.log("agent.prompt => ", agent);
+
+
+      await vapi.start({
+        name: "Paula-broadway",
+        model: {
+          provider: "openai",
+          model: "gpt-3.5-turbo",
+          temperature: 0.7,
+          systemPrompt: agent.model.messages[0].content,
+          functions: [
+            // I will change this functions don't worry
+            {
+              name: "suggestShows",
+              async: true,
+              description: "Suggests a list of broadway shows to the user.",
+              parameters: {
+                type: "object",
+                properties: {
+                  location: {
+                    type: "string",
+                    description: "The location for which the user wants to see the shows.",
+                  },
+                  date: {
+                    type: "string",
+                    description: "The date for which the user wants to see the shows.",
+                  },
+                },
+              },
+            },
+            {
+              name: "confirmDetails",
+              async: true,
+              description: "Confirms the details provided by the user.",
+              parameters: {
+                type: "object",
+                properties: {
+                  show: {
+                    type: "string",
+                    description: "The show for which the user wants to book tickets.",
+                  },
+                  date: {
+                    type: "string",
+                    description: "The date for which the user wants to book the tickets.",
+                  },
+                  location: {
+                    type: "string",
+                    description: "The location for which the user wants to book the tickets.",
+                  },
+                  numberOfTickets: {
+                    type: "number",
+                    description: "The number of tickets that the user wants to book.",
+                  },
+                },
+              },
+            },
+            {
+              name: "bookTickets",
+              async: true,
+              description: "Books tickets for the user.",
+              parameters: {
+                type: "object",
+                properties: {
+                  show: {
+                    type: "string",
+                    description: "The show for which the user wants to book tickets.",
+                  },
+                  date: {
+                    type: "string",
+                    description: "The date for which the user wants to book the tickets.",
+                  },
+                  location: {
+                    type: "string",
+                    description: "The location for which the user wants to book the tickets.",
+                  },
+                  numberOfTickets: {
+                    type: "number",
+                    description: "The number of tickets that the user wants to book.",
+                  },
+                },
+              },
+            },
+          ],
+        },
+        voice: {
+          provider: "11labs",
+          voiceId: "paula",
+        },
+        firstMessage: agent.firstMessage,
+        serverUrl: process.env.NEXT_PUBLIC_SERVER_URL
+          ? process.env.NEXT_PUBLIC_SERVER_URL
+          : "https://08ae-202-43-120-244.ngrok-free.app/api/webhook",
+      });
     } catch (error) {
       console.error('Error starting conversation:', error);
       toast.error('Failed to start conversation.');
@@ -273,7 +317,6 @@ const AgentsList: React.FC = () => {
         open={open}
         handleClose={handleClose}
         handleSubmit={handleSubmit}
-        handleUpdate={handleUpdate}
         editingAgent={editingAgent}
       />
     </Container>
