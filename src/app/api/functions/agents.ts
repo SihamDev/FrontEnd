@@ -28,3 +28,5 @@ export const updateAssistant = (id: number, data: Partial<Assistant>) => api.pat
 
 // Delete Assistant
 export const deleteAssistant = (id: number) => api.delete(`/assistant/${id}`);
+
+// export const callAssistant 

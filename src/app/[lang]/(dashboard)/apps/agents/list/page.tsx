@@ -23,7 +23,7 @@ import { Edit, Delete, Phone, ViewModule, TableRows } from '@mui/icons-material'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AgentDialog from '@/components/agent/AgentDialog';
-import { getAssistants, createAssistant, updateAssistant as updateAssistantApi, deleteAssistant } from '@/app/api/functions/agents';
+import { getAssistants, createAssistant, updateAssistant as updateAssistantApi, deleteAssistant, updateAssistant } from '@/app/api/functions/agents';
 import { Agent } from '@/types/Agent';
 
 const AgentsList: React.FC = () => {
@@ -59,46 +59,71 @@ const AgentsList: React.FC = () => {
     setOpen(false);
   };
 
-  const handleSubmit = async (newAgent: Agent) => {
+  const handleSubmit = async (agent: Agent) => {
     const data = {
-      name: newAgent.name,
+      name: agent.name,
       model: {
         provider: "openai",
         model: "gpt-3.5-turbo",
         temperature: 0.7,
-        systemPrompt: newAgent.prompt,
-        functions: newAgent.functionsList
+        systemPrompt: agent.prompt,
+        functions: agent.functionsList
       },
       voice: {
         provider: "11labs",
         voiceId: "pFZP5JQG7iQjIQuC4Bku"
       },
-      firstMessage: newAgent.firstMessage,
+      firstMessage: agent.firstMessage,
       serverUrl: "https://webhook.site/20988bdc-a6f7-41b8-af41-8978220de89c"
     };
 
     try {
-      const response = await createAssistant(data);
-      setAgents([...agents, response.data]);
-      toast.success('Agent created successfully!');
+      if (agent.id) {
+        // Call the update API
+        const res = await updateAssistant(agent.id, data);
+        if (res.status === 200) {
+          setAgents(agents.map(a => a.id === agent.id ? res.data : a));
+          toast.success('Agent updated successfully!');
+        }
+      } else {
+        // Call the create API
+        const response = await createAssistant(data);
+        setAgents([...agents, response.data]);
+        toast.success('Agent created successfully!');
+      }
     } catch (error) {
-      toast.error('Failed to create agent.');
+      toast.error(agent.id ? 'Failed to update agent.' : 'Failed to create agent.');
       console.error(error);
     }
 
     handleClose();
   };
 
+
   const handleUpdate = async (updatedAgent: Agent) => {
+    const data = {
+      name: updatedAgent.name,
+      model: {
+        provider: "openai",
+        model: "gpt-3.5-turbo",
+        temperature: 0.7,
+        systemPrompt: updatedAgent.prompt,
+        functions: updatedAgent.functionsList
+      },
+      voice: {
+        provider: "11labs",
+        voiceId: "pFZP5JQG7iQjIQuC4Bku"
+      },
+      firstMessage: updatedAgent.firstMessage,
+      serverUrl: "https://webhook.site/20988bdc-a6f7-41b8-af41-8978220de89c"
+    };
     try {
-      const response = await updateAssistantApi(updatedAgent.id, updatedAgent);
-      const updatedAgents = agents.map(agent =>
-        agent.id === updatedAgent.id ? { ...agent, ...updatedAgent } : agent
-      );
-      setAgents(updatedAgents);
-      toast.success('Agent updated successfully!');
+      const res = await updateAssistant(updatedAgent.id, data);
+      if (res.status === 200) {
+        toast.success('Agent updated successfully!');
+      }
     } catch (error) {
-      toast.error('Failed to update agent.');
+      toast.error('Failed to create agent.');
       console.error(error);
     }
 

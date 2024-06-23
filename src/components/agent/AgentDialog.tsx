@@ -83,8 +83,8 @@ const AgentDialog: React.FC<{
     };
 
     const handleSubmitForm = () => {
-        const newAgent: Agent = {
-            id: editingAgent ? editingAgent.id : 0, // Assigning 0 if creating a new agent
+        const agent: Agent = {
+            id: editingAgent?.id,
             name,
             firstMessage,
             language,
@@ -93,7 +93,7 @@ const AgentDialog: React.FC<{
             voicemailMessage,
             functionsList,
         };
-        handleSubmit(newAgent);
+        handleSubmit(agent);
         handleClose();
     };
 
