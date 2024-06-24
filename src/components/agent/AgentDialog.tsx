@@ -38,17 +38,6 @@ interface Agent {
 const languageOptions = [
     { value: 'en-US', label: 'English (US)' },
     { value: 'es-ES', label: 'Spanish (Spain)' },
-    { value: 'fr-FR', label: 'French (France)' },
-    { value: 'de-DE', label: 'German (Germany)' },
-    { value: 'it-IT', label: 'Italian (Italy)' },
-    { value: 'ja-JP', label: 'Japanese (Japan)' },
-    { value: 'zh-CN', label: 'Chinese (Simplified, China)' },
-    { value: 'pt-BR', label: 'Portuguese (Brazil)' },
-    { value: 'ru-RU', label: 'Russian (Russia)' },
-    { value: 'ko-KR', label: 'Korean (South Korea)' },
-    { value: 'ar-SA', label: 'Arabic (Saudi Arabia)' },
-    { value: 'hi-IN', label: 'Hindi (India)' },
-    { value: 'nl-NL', label: 'Dutch (Netherlands)' },
 ];
 
 const AgentDialog: React.FC<{
@@ -65,6 +54,9 @@ const AgentDialog: React.FC<{
     const [endCallMessage, setEndCallMessage] = useState('');
     const [voicemailMessage, setVoicemailMessage] = useState('');
     const [functionsList, setFunctionsList] = useState<Function[]>([]);
+    const [openModal, setOpenModal] = useState(false); // State for controlling "New Action" dialog
+    const [newActionName, setNewActionName] = useState('');
+    const [newActionDescription, setNewActionDescription] = useState('');
 
     useEffect(() => {
         if (editingAgent) {
@@ -74,8 +66,10 @@ const AgentDialog: React.FC<{
             setPrompt(editingAgent.prompt);
             setEndCallMessage(editingAgent.endCallMessage || '');
             setVoicemailMessage(editingAgent.voicemailMessage || '');
-            setFunctionsList(editingAgent.functionsList || []);
+            setFunctionsList(editingAgent.model.functions || []);
+            console.log("editingAgent.functionsList ", editingAgent);
         }
+
     }, [editingAgent]);
 
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -95,6 +89,26 @@ const AgentDialog: React.FC<{
         };
         handleSubmit(agent);
         handleClose();
+    };
+
+    const handleOpenModal = () => {
+        setOpenModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setOpenModal(false);
+    };
+
+    const handleAddAction = () => {
+        // Implement action handling logic here
+        const newFunction: Function = {
+            name: newActionName,
+            description: newActionDescription,
+        };
+        setFunctionsList([...functionsList, newFunction]);
+        setNewActionName('');
+        setNewActionDescription('');
+        handleCloseModal();
     };
 
     return (
@@ -173,11 +187,45 @@ const AgentDialog: React.FC<{
                     <Box mt={2} pl={3}>
                         <Typography variant="h3">Actions</Typography>
                         <Grid container spacing={2} mt={2}>
-                            {functionsList && functionsList.map((func) => (
-                                <FunctionCard func={func} key={func.name} />
+                            {functionsList && functionsList.map((func, index) => (
+                                <FunctionCard func={func} key={index} />
                             ))}
                         </Grid>
-                        <AddAction />
+                        <Button variant="outlined" color="primary" onClick={handleOpenModal}>
+                            Add New Function
+                        </Button>
+                        <Dialog open={openModal} onClose={handleCloseModal} fullWidth maxWidth="sm">
+                            <DialogTitle>Add New Action</DialogTitle>
+                            <DialogContent>
+                                <TextField
+                                    autoFocus
+                                    margin="dense"
+                                    label="Action Name"
+                                    type="text"
+                                    fullWidth
+                                    value={newActionName}
+                                    onChange={(e) => setNewActionName(e.target.value)}
+                                />
+                                <TextField
+                                    margin="dense"
+                                    label="Action Description"
+                                    type="text"
+                                    fullWidth
+                                    multiline
+                                    rows={4}
+                                    value={newActionDescription}
+                                    onChange={(e) => setNewActionDescription(e.target.value)}
+                                />
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={handleCloseModal} color="primary">
+                                    Cancel
+                                </Button>
+                                <Button onClick={handleAddAction} color="primary">
+                                    Add
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
                     </Box>
                 )}
             </DialogContent>

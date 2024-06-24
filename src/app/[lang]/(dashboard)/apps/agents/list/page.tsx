@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useEffect, useState } from 'react';
 import Vapi from '@vapi-ai/web';
@@ -17,26 +17,31 @@ import {
   Card,
   CardContent,
   CardActions,
-  Grid
+  Grid,
+  CircularProgress,
 } from '@mui/material';
 import { Edit, Delete, Phone, ViewModule, TableRows } from '@mui/icons-material';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AgentDialog from '@/components/agent/AgentDialog';
 import { getAssistants, createAssistant, updateAssistant, deleteAssistant } from '@/app/api/functions/agents';
 import { Agent } from '@/types/Agent';
+
 
 const AgentsList: React.FC = () => {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [open, setOpen] = useState(false);
   const [editingAgent, setEditingAgent] = useState<Agent | null>(null);
   const [view, setView] = useState<'table' | 'card'>('table');
+  const [loadingAgentId, setLoadingAgentId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchAgents = async () => {
       try {
         const assistantsRes = await getAssistants();
         setAgents(assistantsRes.data);
+        console.log("agents => ", assistantsRes.data[0].model.functions);
+
       } catch (error) {
         console.error(error);
       }
@@ -97,6 +102,7 @@ const AgentsList: React.FC = () => {
   };
 
   const handleCall = async (agent: Agent) => {
+    setLoadingAgentId(agent.id);
     try {
       const vapi = new Vapi('7abfc5b1-4695-492e-aecb-c0db750f9b80');
 
@@ -111,12 +117,12 @@ const AgentsList: React.FC = () => {
 
       vapi.on('call-end', () => {
         console.log('Call has ended');
+        setLoadingAgentId(null);
       });
 
       console.log("agent.prompt => ", agent);
 
-
-      await vapi.start({
+      const startCall = await vapi.start({
         name: "Paula-broadway",
         model: {
           provider: "openai",
@@ -124,7 +130,6 @@ const AgentsList: React.FC = () => {
           temperature: 0.7,
           systemPrompt: agent.model.messages[0].content,
           functions: [
-            // I will change this functions don't worry
             {
               name: "suggestShows",
               async: true,
@@ -206,15 +211,21 @@ const AgentsList: React.FC = () => {
           ? process.env.NEXT_PUBLIC_SERVER_URL
           : "https://08ae-202-43-120-244.ngrok-free.app/api/webhook",
       });
+
+      if (startCall) {
+        setLoadingAgentId(null)
+      }
+
     } catch (error) {
       console.error('Error starting conversation:', error);
       toast.error('Failed to start conversation.');
+      setLoadingAgentId(null);
     }
   };
 
   return (
     <Container>
-      <ToastContainer />
+
       <Typography variant="h4" component="h1" gutterBottom>
         Agents
       </Typography>
@@ -257,11 +268,12 @@ const AgentsList: React.FC = () => {
                     <Button
                       variant="contained"
                       color="primary"
-                      startIcon={<Phone style={{ fontSize: '20px' }} />}
+                      startIcon={loadingAgentId === agent.id ? <CircularProgress size={20} /> : <Phone style={{ fontSize: '20px' }} />}
                       onClick={() => handleCall(agent)}
                       style={{ padding: '10px 30px', fontSize: '18px' }}
+                      disabled={loadingAgentId === agent.id}
                     >
-                      Talk
+                      {loadingAgentId === agent.id ? 'Connecting Call...' : 'Talk'}
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -282,11 +294,12 @@ const AgentsList: React.FC = () => {
                     <Button
                       variant="contained"
                       color="primary"
-                      startIcon={<Phone style={{ fontSize: '20px' }} />}
+                      startIcon={loadingAgentId === agent.id ? <CircularProgress size={20} /> : <Phone style={{ fontSize: '20px' }} />}
                       onClick={() => handleCall(agent)}
                       style={{ padding: '10px 40px', fontSize: '20px' }}
+                      disabled={loadingAgentId === agent.id}
                     >
-                      Talk
+                      {loadingAgentId === agent.id ? 'Connecting Call...' : 'Talk'}
                     </Button>
                   </div>
                   <Typography color="textSecondary" marginBottom={"20px"}>
@@ -318,6 +331,7 @@ const AgentsList: React.FC = () => {
         handleClose={handleClose}
         handleSubmit={handleSubmit}
         editingAgent={editingAgent}
+      // agent={agent}
       />
     </Container>
   );
