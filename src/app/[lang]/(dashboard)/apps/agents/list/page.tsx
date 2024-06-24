@@ -132,6 +132,10 @@ const AgentsList: React.FC = () => {
       }
 
       if (agent.id) {
+
+        // console.log();
+
+
         const res = await updateAssistant(agent.id, updatedData);
         if (res.status === 200) {
           setAgents(agents.map(a => a.id === agent.id ? res.data : a));

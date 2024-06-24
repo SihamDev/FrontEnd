@@ -63,11 +63,11 @@ const AgentDialog: React.FC<{
             setName(editingAgent.name);
             setFirstMessage(editingAgent.firstMessage);
             setLanguage(editingAgent.language);
-            setPrompt(editingAgent.prompt);
+            setPrompt(editingAgent.model.messages[0].content);
             setEndCallMessage(editingAgent.endCallMessage || '');
             setVoicemailMessage(editingAgent.voicemailMessage || '');
             setFunctionsList(editingAgent.model.functions || []);
-            console.log("editingAgent.functionsList ", editingAgent);
+            console.log("prompt ", editingAgent.model.messages[0].content);
         }
 
     }, [editingAgent]);
@@ -87,6 +87,7 @@ const AgentDialog: React.FC<{
             voicemailMessage,
             functionsList,
         };
+
         handleSubmit(agent);
         handleClose();
     };
