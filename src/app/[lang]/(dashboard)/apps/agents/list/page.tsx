@@ -66,7 +66,7 @@ const AgentsList: React.FC = () => {
 
   const handleSubmit = async (agent: Agent) => {
 
-    console.log("agent => ", agent);
+    console.log("agent.language => ", agent.language);
 
 
     try {
@@ -74,7 +74,7 @@ const AgentsList: React.FC = () => {
         "transcriber": {
           "provider": "deepgram",
           "model": "nova-2",
-          "language": "bg",
+          "language": agent.language,
           "smartFormat": true,
         },
         "model": {

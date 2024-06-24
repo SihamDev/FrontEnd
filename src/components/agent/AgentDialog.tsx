@@ -62,12 +62,12 @@ const AgentDialog: React.FC<{
         if (editingAgent) {
             setName(editingAgent.name);
             setFirstMessage(editingAgent.firstMessage);
-            setLanguage(editingAgent.language);
+            setLanguage(editingAgent.transcriber.language);
             setPrompt(editingAgent.model.messages[0].content);
             setEndCallMessage(editingAgent.endCallMessage || '');
             setVoicemailMessage(editingAgent.voicemailMessage || '');
             setFunctionsList(editingAgent.model.functions || []);
-            console.log("prompt ", editingAgent.model.messages[0].content);
+            console.log("lang ", editingAgent.transcriber.language);
         }
 
     }, [editingAgent]);
