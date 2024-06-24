@@ -65,9 +65,74 @@ const AgentsList: React.FC = () => {
   };
 
   const handleSubmit = async (agent: Agent) => {
+
+    console.log("agent => ", agent);
+
+
     try {
+      const updatedData = {
+        "transcriber": {
+          "provider": "deepgram",
+          "model": "nova-2",
+          "language": "bg",
+          "smartFormat": true,
+        },
+        "model": {
+          "messages": [
+            {
+              "content": agent.prompt,
+              "role": "assistant"
+            }
+          ],
+
+          "provider": "anyscale",
+          "model": "",
+          "temperature": 1,
+          "maxTokens": 525,
+          "emotionRecognitionEnabled": true
+        },
+        "voice": {
+          "inputPreprocessingEnabled": true,
+          "inputReformattingEnabled": true,
+          "inputMinCharacters": 30,
+          "inputPunctuationBoundaries": [
+            "。", "，", ".", "!", "?", ";", ")", "،", "۔", "।", "॥", "|", "||", ",", ":"
+          ],
+          "fillerInjectionEnabled": true,
+          "provider": "azure",
+          "voiceId": "andrew",
+          "speed": 1.25
+        },
+        "firstMessageMode": "assistant-speaks-first",
+        "recordingEnabled": true,
+        "hipaaEnabled": true,
+        "clientMessages": [
+          "conversation-update", "function-call", "hang", "model-output", "speech-update", "status-update", "transcript", "tool-calls", "user-interrupted", "voice-input"
+        ],
+        "serverMessages": [
+          "conversation-update", "end-of-call-report", "function-call", "hang", "speech-update", "status-update", "tool-calls", "transfer-destination-request", "user-interrupted"
+        ],
+        "silenceTimeoutSeconds": 30,
+        "responseDelaySeconds": 0.4,
+        "llmRequestDelaySeconds": 0.1,
+        "numWordsToInterruptAssistant": 5,
+        "maxDurationSeconds": 1800,
+        "backgroundSound": "office",
+        "backchannelingEnabled": true,
+        "backgroundDenoisingEnabled": true,
+        "modelOutputInMessagesEnabled": true,
+        "name": agent.name,
+        "firstMessage": agent.firstMessage,
+        "voicemailMessage": agent.voicemailMessage,
+        "endCallMessage": agent.endCallMessage,
+        "serverUrl": "https://webhook.site/20988bdc-a6f7-41b8-af41-8978220de89c",
+        "artifactPlan": {
+          "videoRecordingEnabled": true
+        }
+      }
+
       if (agent.id) {
-        const res = await updateAssistant(agent.id, agent);
+        const res = await updateAssistant(agent.id, updatedData);
         if (res.status === 200) {
           setAgents(agents.map(a => a.id === agent.id ? res.data : a));
           toast.success('Agent updated successfully!');
