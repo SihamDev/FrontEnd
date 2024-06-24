@@ -84,7 +84,7 @@ const AgentsList: React.FC = () => {
               "role": "assistant"
             }
           ],
-
+          "functions": agent.functionsList,
           "provider": "anyscale",
           "model": "",
           "temperature": 1,
