@@ -337,7 +337,7 @@ const AgentsList: React.FC = () => {
                     <Button
                       variant="contained"
                       color="primary"
-                      startIcon={loadingAgentId === agent.id ? <CircularProgress color={'success'} size={20} /> : <Phone style={{ fontSize: '20px' }} />}
+                      startIcon={loadingAgentId === agent.id ? <CircularProgress style={{ color: "#fff" }} size={20} /> : <Phone style={{ fontSize: '20px' }} />}
                       onClick={() => handleCall(agent)}
                       style={{ padding: '10px 30px', fontSize: '18px' }}
                       disabled={loadingAgentId === agent.id}
