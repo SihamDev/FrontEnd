@@ -102,6 +102,7 @@ const AgentDialog: React.FC<{
     const [firstMessage, setFirstMessage] = useState('');
     const [language, setLanguage] = useState('en-US');
     const [prompt, setPrompt] = useState('');
+    const [promptRole, setPromptRole] = useState('');
     const [endCallMessage, setEndCallMessage] = useState('');
     const [voicemailMessage, setVoicemailMessage] = useState('');
     const [functionsList, setFunctionsList] = useState<Function[]>([]);
@@ -115,6 +116,7 @@ const AgentDialog: React.FC<{
             setFirstMessage(editingAgent.firstMessage);
             setLanguage(editingAgent.transcriber.language);
             setPrompt(editingAgent.model.messages[0].content);
+            setPromptRole(editingAgent.model.messages[0].role);
             setEndCallMessage(editingAgent.endCallMessage || '');
             setVoicemailMessage(editingAgent.voicemailMessage || '');
             setFunctionsList(editingAgent.model.functions || []);
@@ -137,6 +139,7 @@ const AgentDialog: React.FC<{
             endCallMessage,
             voicemailMessage,
             functionsList,
+            promptRole
         };
 
         handleSubmit(agent);

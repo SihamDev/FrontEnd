@@ -66,7 +66,7 @@ const AgentsList: React.FC = () => {
 
   const handleSubmit = async (agent: Agent) => {
 
-    console.log("agent.prompt => ", agent.prompt);
+    console.log("agent.prompt => ", agent);
 
     // agent.model.messages[0].content
 
@@ -81,11 +81,11 @@ const AgentsList: React.FC = () => {
         "model": {
           "messages": [
             {
-              "content": "Hello world! :)",
-              "role": "assistant"
+              "content": agent.prompt, // Prompt message
+              "role": agent.promptRole // "model.messages.0.role must be one of the following values: assistant, function, user, system, tool"
             }
           ],
-          "functions": agent.functionsList,
+          "functions": agent.functionsList, // Functions List
           "provider": "anyscale",
           "model": "",
           "temperature": 1,
@@ -122,10 +122,13 @@ const AgentsList: React.FC = () => {
         "backchannelingEnabled": true,
         "backgroundDenoisingEnabled": true,
         "modelOutputInMessagesEnabled": true,
-        "name": agent.name,
-        "firstMessage": agent.firstMessage,
-        "voicemailMessage": agent.voicemailMessage,
-        "endCallMessage": agent.endCallMessage,
+        "name": agent.name, // Assistant Name
+        "firstMessage": agent.firstMessage, // First Message
+        "voicemailMessage": agent.voicemailMessage, // Voic Email Message
+
+        // "Voicemail Message" is a recorded audio left by a caller when the recipient is unavailable, which the recipient can access later.
+        "endCallMessage": agent.endCallMessage, // end Call Message
+
         "serverUrl": "https://webhook.site/20988bdc-a6f7-41b8-af41-8978220de89c",
         "artifactPlan": {
           "videoRecordingEnabled": true
