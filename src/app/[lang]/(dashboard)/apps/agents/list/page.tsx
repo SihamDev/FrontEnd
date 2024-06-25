@@ -40,7 +40,7 @@ const AgentsList: React.FC = () => {
       try {
         const assistantsRes = await getAssistants();
         setAgents(assistantsRes.data);
-        console.log("agents => ", assistantsRes.data[0].model.functions);
+        console.log("agents list => ", assistantsRes.data);
 
       } catch (error) {
         console.error(error);
@@ -66,8 +66,9 @@ const AgentsList: React.FC = () => {
 
   const handleSubmit = async (agent: Agent) => {
 
-    console.log("agent.language => ", agent.language);
+    console.log("agent.prompt => ", agent.prompt);
 
+    // agent.model.messages[0].content
 
     try {
       const updatedData = {
@@ -80,7 +81,7 @@ const AgentsList: React.FC = () => {
         "model": {
           "messages": [
             {
-              "content": agent.prompt,
+              "content": "Hello world! :)",
               "role": "assistant"
             }
           ],
@@ -132,10 +133,6 @@ const AgentsList: React.FC = () => {
       }
 
       if (agent.id) {
-
-        // console.log();
-
-
         const res = await updateAssistant(agent.id, updatedData);
         if (res.status === 200) {
           setAgents(agents.map(a => a.id === agent.id ? res.data : a));
@@ -337,7 +334,7 @@ const AgentsList: React.FC = () => {
                     <Button
                       variant="contained"
                       color="primary"
-                      startIcon={loadingAgentId === agent.id ? <CircularProgress size={20} /> : <Phone style={{ fontSize: '20px' }} />}
+                      startIcon={loadingAgentId === agent.id ? <CircularProgress color={'success'} size={20} /> : <Phone style={{ fontSize: '20px' }} />}
                       onClick={() => handleCall(agent)}
                       style={{ padding: '10px 30px', fontSize: '18px' }}
                       disabled={loadingAgentId === agent.id}
