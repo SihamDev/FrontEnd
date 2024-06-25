@@ -112,15 +112,15 @@ const AgentDialog: React.FC<{
 
     useEffect(() => {
         if (editingAgent) {
-            setName(editingAgent.name);
-            setFirstMessage(editingAgent.firstMessage);
-            setLanguage(editingAgent.transcriber.language);
-            setPrompt(editingAgent.model.messages[0].content);
-            setPromptRole(editingAgent.model.messages[0].role);
-            setEndCallMessage(editingAgent.endCallMessage || '');
-            setVoicemailMessage(editingAgent.voicemailMessage || '');
-            setFunctionsList(editingAgent.model.functions || []);
-            console.log("lang ", editingAgent.transcriber.language);
+            setName(editingAgent?.name);
+            setFirstMessage(editingAgent?.firstMessage);
+            setLanguage(editingAgent?.transcriber?.language);
+            setPrompt(editingAgent?.model?.messages[0].content);
+            setPromptRole(editingAgent?.model?.messages[0].role);
+            setEndCallMessage(editingAgent?.endCallMessage || '');
+            setVoicemailMessage(editingAgent?.voicemailMessage || '');
+            setFunctionsList(editingAgent?.model?.functions || []);
+            console.log("lang ", editingAgent?.transcriber?.language);
         }
 
     }, [editingAgent]);
