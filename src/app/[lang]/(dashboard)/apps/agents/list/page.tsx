@@ -75,7 +75,7 @@ const AgentsList: React.FC = () => {
         "transcriber": {
           "provider": "deepgram",
           "model": "nova-2",
-          "language": agent.language,
+          "language": agent.language === undefined ? "en" : agent.language,
           "smartFormat": true,
         },
         "model": {
