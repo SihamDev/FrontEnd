@@ -5,23 +5,23 @@ import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 
-const CongratulationsJohn = () => {
+const ResolvedIssues = () => {
   return (
     <Card>
       <Grid container>
         <Grid item xs={8}>
           <CardContent>
             <Typography variant='h5' className='mbe-0.5'>
-              Total Calls Handled
+            Resolved Issues
             </Typography>
             <Typography variant='subtitle1' className='mbe-2'>
-              ALL Calls managed in the last 30 days
+            Issues resolved this month successfully
             </Typography>
             <Typography variant='h4' color='primary.main' className='mbe-1'>
-              3,245
+            1,980
             </Typography>
             <Button variant='contained' color='primary'>
-              +5% from last month
+            +8% from last month
             </Button>
           </CardContent>
         </Grid>
@@ -29,7 +29,7 @@ const CongratulationsJohn = () => {
           <div className='relative bs-full is-full'>
             <img
               alt='Congratulations John'
-              src='/images/illustrations/characters/6.png'
+              src='/images/illustrations/characters/8.png'
               className='max-bs-[150px] absolute block-end-0 inline-end-6 max-is-full'
             />
           </div>
@@ -39,4 +39,4 @@ const CongratulationsJohn = () => {
   )
 }
 
-export default CongratulationsJohn
+export default ResolvedIssues

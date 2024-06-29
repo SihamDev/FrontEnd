@@ -46,7 +46,7 @@ const BarChartRevenueGrowth = ({ serverMode }: { serverMode: SystemMode }) => {
     legend: { show: false },
     tooltip: { enabled: true, theme: 'false' },
     dataLabels: { enabled: false },
-    labels: ['Electronic', 'Sports', 'Decor', 'Fashion'],
+    labels: ['technique', 'reservation', 'questions', 'payments'],
     states: {
       hover: {
         filter: { type: 'none' }
@@ -111,21 +111,21 @@ const BarChartRevenueGrowth = ({ serverMode }: { serverMode: SystemMode }) => {
   }
 
   return (
-    <Card className='overflow-visible'>
+    <Card className='overflow-visible' style={{height: 211}}>
       <CardContent className='flex justify-between gap-4'>
         <div className='flex flex-col justify-between'>
           <div className='flex flex-col'>
-            <Typography variant='h5'>Generated Leads</Typography>
-            <Typography>Monthly Report</Typography>
+            <Typography variant='h5'> AI Agents currently online</Typography>
+            {/* <Typography>AI agents currently online</Typography> */}
           </div>
           <div className='flex flex-col items-start'>
-            <Typography variant='h3'>4,350</Typography>
-            <div className='flex items-center gap-1'>
+            <Typography variant='h6' color='success.main'> No downtime incidents</Typography>
+            {/* <div className='flex items-center gap-1'>
               <i className='tabler-chevron-up text-success text-xl'></i>
               <Typography color='success.main' component='span'>
                 +15.8%
               </Typography>
-            </div>
+            </div> */}
           </div>
         </div>
         <AppReactApexCharts type='donut' width={150} height={177} series={series} options={options} />
